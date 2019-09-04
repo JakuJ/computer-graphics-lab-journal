@@ -3,40 +3,140 @@
 
 <head>
     <title>Worksheet 1</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="Jakub Janaszkiewicz">
+    <link rel="stylesheet" href="../../vendor/bootstrap/css/bootstrap.min.css">
+    <style>
+        table {
+            table-layout: auto;
+        }
+
+        th {
+            text-align: center;
+            font-size: 150%;
+        }
+    </style>
 </head>
 
 <body>
-    <table>
-        <tr>
-            <td>
-                <h3>Part 1 - Setup a basic WebGL application</h3>
-                <canvas id="canvas1" width="512" height="512">Please use a browser supporting HTML5</canvas>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <h3>Part 2 - Shaders and buffers</h3>
-                <canvas id="canvas2" width="512" height="512">Please use a browser supporting HTML5</canvas>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <h3>Part 3 - Triangles</h3>
-                <canvas id="canvas3" width="512" height="512">Please use a browser supporting HTML5</canvas>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <h3>Part 4 - A rotating square</h3>
-                <canvas id="canvas4" width="512" height="512">Please use a browser supporting HTML5</canvas>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <h3>Part 5 - A fan of triangles</h3>
-                <canvas id="canvas5" width="512" height="512">Please use a browser supporting HTML5</canvas>
-            </td>
-        </tr>
+    <table class="table">
+        <thead>
+            <th>Exercise</th>
+            <th>Solution</th>
+        </thead>
+        <tbody>
+            <tr>
+                <td>
+                    <h3>Part 1 - Setup a basic WebGL application</h3>
+                    <p>
+                        <ul>
+                            <li>
+                                Create a HTML document with a 512x512 canvas element andwrite a script to create a WebGL
+                                context. [Angel 2.8]
+                            </li>
+                            <li>
+                                Setup a viewport and clear the canvas with the color cornflower blue (0.3921, 0.5843,
+                                0.9294, 1.0). [Angel 2.5.1]
+                            </li>
+                            <li>
+                                If not already done, move the script to a separate JavaScript file and include it in the
+                                HTML document.
+                            </li>
+                            <li>
+                                Setup the WebGL context using Angel’s “setupWebGL”. You can use the window.onload event
+                                to initialize and setup the application. [Angel 2.8]
+                            </li>
+                        </ul>
+                    </p>
+                </td>
+                <td>
+                    <canvas id="canvas1" width="512" height="512">Please use a browser supporting HTML5</canvas>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <h3>Part 2 - Shaders and buffers</h3>
+                    <p>
+                        <ul>
+                            <li>
+                                Load and compile a shader program. Write a basic vertex shader and a constant color
+                                fragment shader. [Angel 2.8.3 to 2.8.8]
+                            </li>
+                            <li>
+                                Setup a vertex buffer with the corresponding attribute pointer. Add the coordinates and
+                                draw three points of size 20 pixels [Angel 2.4, 2.8, and 2.5.3]
+                            </li>
+                        </ul>
+                    </p>
+                </td>
+                <td>
+                    <canvas id="canvas2" width="512" height="512">Please use a browser supporting HTML5</canvas>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <h3>Part 3 - Triangles</h3>
+                    <p>
+                        <ul>
+                            <li>
+                                Change the code in the previous example to draw triangles instead of points. [Angel
+                                2.4.2]
+                            </li>
+                            <li>
+                                Extend the application to include a second color buffer and draw the triangle with a
+                                red, green and blue vertex color. [Angel 2.5.1 and 2.10]
+                            </li>
+                        </ul>
+                    </p>
+                </td>
+                <td>
+                    <canvas id="canvas3" width="512" height="512">Please use a browser supporting HTML5</canvas>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <h3>Part 4 - A rotating square</h3>
+                    <p>
+                        <ul>
+                            <li>
+                                Add a second triangle to the previous part such that you have a quadrilateral (which is
+                                maybe even a square). [Angel 2.4]
+                            </li>
+                            <li>
+                                Center your quad (short form of quadrilateral) and rotate it such that it has its
+                                vertices on the coordinate axes.
+                            </li>
+                            <li>
+                                Add a rotation so the quad rotates around its center. Animate the rotation angle over
+                                time. Use requestAnimFrame to continuously call your render function. [Angel 3.1]
+                            </li>
+                        </ul>
+                    </p>
+                </td>
+                <td>
+                    <canvas id="canvas4" width="512" height="512">Please use a browser supporting HTML5</canvas>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <h3>Part 5 - A fan of triangles</h3>
+                    <p>
+                        <ul>
+                            <li>
+                                Create and draw a circle using the triangle fan drawing mode. [Angel 2.4.2]
+                            </li>
+                            <li>
+                                Make the circle bounce up and down over time.
+                            </li>
+                        </ul>
+                    </p>
+                </td>
+                <td>
+                    <canvas id="canvas5" width="512" height="512">Please use a browser supporting HTML5</canvas>
+                </td>
+            </tr>
+        </tbody>
     </table>
 
     <script type="text/javascript" src="../../common/webgl-utils.js"></script>
