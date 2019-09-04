@@ -39,7 +39,8 @@ function init() {
     // MAIN LOOP
     var animate = time =>
     {
-        let y = -Math.sin(time / 600) * R;
+        let x = (time / 180) % 10 - 5;
+        let y = (-(x * x) + 25) / 25 - 1 + R;
         
         // BACKGROUND
         gl.clearColor(0.3921, 0.5843, 0.9294, 1.0);
