@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Sierpiński</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="Jakub Janaszkiewicz">
+    <link rel="stylesheet" href="../../vendor/bootstrap/css/bootstrap.min.css">
+    <style>
+        body {
+            text-align: center;
+        }
+
+        p {
+            margin: 0 10px;
+        }
+
+        table {
+            margin: 0 auto;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="gl-canvas" width="600" height="600">Please use a browser supporting HTML5</canvas><br />
+    <table>
+        <tbody>
+            <tr>
+                <td>
+                    <p>0</p>
+                </td>
+                <td>
+                    <input id="depth" name="depth" type="range" min="0" max="7" list="steplist" />
+                    <datalist id="steplist">
+                        <option>0</option>
+                        <option>1</option>
+                        <option>2</option>
+                        <option>3</option>
+                        <option>4</option>
+                        <option>5</option>
+                        <option>6</option>
+                        <option>7</option>
+                    </datalist>
+                </td>
+                <td>
+                    <p>7</p>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <p>Depth of recursion</p>
+    <script id="vertex-shader" type="x-shader/x-vertex">
+        attribute vec3 vPosition;
+        attribute vec3 vColor;
+        uniform mat4 vRotation;
+        varying vec3 fColor;
+        
+        void main() {
+            gl_Position = vRotation * vec4(vPosition * 0.5, 1);
+            fColor = vColor;
+        }
+    </script>
+    <script id="fragment-shader" type="x-shader/x-fragment">
+        precision mediump float;
+        varying vec3 fColor;
+        
+        void main() {
+            gl_FragColor = vec4(fColor, 1);
+        }
+    </script>
+
+    <script type="text/javascript" src="../../common/webgl-utils.js"></script>
+    <script type="text/javascript" src="../../common/initShaders.js"></script>
+    <script type="text/javascript" src="../../common/MV.js"></script>
+
+    <script type="text/javascript" src="./gasket.js"></script>
+</body>
