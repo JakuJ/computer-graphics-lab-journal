@@ -1,11 +1,10 @@
 // @ts-nocheck
-
 /**
  * @param {Element} canvas The canvas element to create a context from.
  * @return {WebGLRenderingContext} The created context.
  */
 function setupWebGL(canvas) {
-    gl = WebGLUtils.setupWebGL(canvas);
+    var gl = WebGLUtils.setupWebGL(canvas);
     if (!gl) {
         alert("WebGL isn’t available");
     }
@@ -43,8 +42,10 @@ function n_level_sierpinski(n, gl, program) {
     function triangle(a, b, c, color) {
         points.push(a);
         colors.push(baseColors[color]);
+        
         points.push(b);
         colors.push(baseColors[color]);
+        
         points.push(c);
         colors.push(baseColors[color]);
     }
@@ -117,6 +118,7 @@ function renderCanvas() {
 }
 
 window.onload = renderCanvas;
+
 document.getElementById("depth").oninput = () => {
     window.cancelAnimationFrame(lastAnimation); // crucial for performance!
     renderCanvas();

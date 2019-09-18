@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Worksheet 1</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="Jakub Janaszkiewicz">
+    <link rel="stylesheet" href="../../vendor/bootstrap/css/bootstrap.min.css">
+    <style>
+        table {
+            table-layout: auto;
+        }
+
+        th {
+            text-align: center;
+            font-size: 150%;
+        }
+    </style>
+</head>
+
+<body>
+    <table class="table">
+        <thead>
+            <th>Exercise</th>
+            <th>Solution</th>
+        </thead>
+        <tbody>
+            <tr>
+                <td>
+                    <h3>Part 1</h3>
+                    <p>
+                        <ul>
+                            <li>
+                                Start from your solution to Part 2 of Worksheet 1: A web application that clears the
+                                canvas and then draws three points. [Angel 2.8]
+                            </li>
+                            <li>
+                                Attach an event handler to the mouse click event and draw points on the canvas where the
+                                mouse was clicked. [Angel 3.7]
+                            </li>
+                            <li>
+                                Points are offset from the tip of the mouse cursor. This is not as desired. Get the
+                                bounding rectangle of the canvas in the client area using
+                                event.target.getBoundingClientRect() and correct the mouse position using the left and
+                                top coordinates of this rectangle.
+                            </li>
+                        </ul>
+                    </p>
+                </td>
+                <td>
+                    <canvas id="canvas1" width="512" height="512">Please use a browser supporting HTML5</canvas>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <h3>Part 2</h3>
+                    <p>
+                        <ul>
+                            <li>
+                                Add a button that clears the canvas. [Angel 3.6.2]
+                            </li>
+                            <li>
+                                Add a color selection menu where you can choose the color to be used when clearing the
+                                canvas. [Angel 2.5, 3.6.3, 3.10]
+                            </li>
+                            <li>
+                                Use a color selection menu to set the color of the drawn point when the mouse is
+                                clicked. This requires updating your shaders to work with colors as in Part 3 of
+                                Worksheet 1.
+                            </li>
+                        </ul>
+                    </p>
+                </td>
+                <td>
+                    <canvas id="canvas2" width="512" height="512">Please use a browser supporting HTML5</canvas>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <h3>Part 3 - Triangles</h3>
+                    <p>
+                        <ul>
+                            <li>
+                                Change the code in the previous example to draw triangles instead of points. [Angel
+                                2.4.2]
+                            </li>
+                            <li>
+                                Extend the application to include a second color buffer and draw the triangle with a
+                                red, green and blue vertex color. [Angel 2.5.1 and 2.10]
+                            </li>
+                        </ul>
+                    </p>
+                </td>
+                <td>
+                    <canvas id="canvas3" width="512" height="512">Please use a browser supporting HTML5</canvas>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <h3>Part 4 - A rotating square</h3>
+                    <p>
+                        <ul>
+                            <li>
+                                Add a second triangle to the previous part such that you have a quadrilateral (which is
+                                maybe even a square). [Angel 2.4]
+                            </li>
+                            <li>
+                                Center your quad (short form of quadrilateral) and rotate it such that it has its
+                                vertices on the coordinate axes.
+                            </li>
+                            <li>
+                                Add a rotation so the quad rotates around its center. Animate the rotation angle over
+                                time. Use requestAnimFrame to continuously call your render function. [Angel 3.1]
+                            </li>
+                        </ul>
+                    </p>
+                </td>
+                <td>
+                    <canvas id="canvas4" width="512" height="512">Please use a browser supporting HTML5</canvas>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <h3>Part 5 - A fan of triangles</h3>
+                    <p>
+                        <ul>
+                            <li>
+                                Create and draw a circle using the triangle fan drawing mode. [Angel 2.4.2]
+                            </li>
+                            <li>
+                                Make the circle bounce up and down over time.
+                            </li>
+                        </ul>
+                    </p>
+                </td>
+                <td>
+                    <canvas id="canvas5" width="512" height="512">Please use a browser supporting HTML5</canvas>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <script type="text/javascript" src="../../common/webgl-utils.js"></script>
+    <script type="text/javascript" src="../../common/initShaders.js"></script>
+    <script type="text/javascript" src="../../common/MV.js"></script>
+
+    <!-- PART 1 -->
+    <script id="vertex-shader-1" type="x-shader/x-vertex">
+        attribute vec2 vPosition;
+        
+        void main() {
+            gl_Position = vec4(vPosition, 0, 1);
+            gl_PointSize = 20.0;
+        }
+    </script>
+    <script id="fragment-shader-1" type="x-shader/x-fragment">
+        precision mediump float;
+        
+        void main() {
+            gl_FragColor = vec4(0, 0, 0, 1);
+        }
+    </script>
+    <script type="text/javascript" src="./script1.js"></script>
+
+    <!-- PART 2 -->
+    <script id="vertex-shader-2" type="x-shader/x-vertex">
+        attribute vec2 vPosition;
+        attribute vec3 vColor;
+        varying vec3 fColor;
+        
+        void main() {
+            fColor = vColor;
+            gl_Position = vec4(vPosition, 0, 1);
+        }
+    </script>
+    <script id="fragment-shader-2" type="x-shader/x-fragment">
+        precision mediump float;
+        varying vec3 fColor;
+        
+        void main() {
+            gl_FragColor = vec4(fColor, 1);
+        }
+    </script>
+    <script type="text/javascript" src="./script2.js"></script>
+
+</body>
+
+</html>
