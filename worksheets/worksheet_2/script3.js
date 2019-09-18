@@ -91,10 +91,8 @@ function context3() {
     }
 
     // Create buffer
-    var pointBuffer = new VectorBuffer('vec2', 'vPosition');
-    var triangleBuffer = new VectorBuffer('vec2', 'vPosition');
-    var pointsColorBuffer = new VectorBuffer('vec3', 'vColor');
-    var trianglesColorBuffer = new VectorBuffer('vec3', 'vColor');
+    var vBuffer = new VectorBuffer('vec2', 'vPosition');
+    var cBuffer = new VectorBuffer('vec3', 'vColor');
 
     const colors = {
         'red': vec3(1, 0.2, 0.2),
@@ -117,9 +115,13 @@ function context3() {
     var currentMode = 0 // [points, triangles]
     var triangleCounter = 0;
 
+    var points = [];
+    var triangles = [];
+
     pointsButton.onclick = () => {
         currentMode = 0;
     }
+
     trianglesButton.onclick = () => {
         currentMode = 1;
         triangleCounter = 0;
@@ -127,13 +129,10 @@ function context3() {
 
     clearButton.onclick = () => {
         bgColor = colors[colorSelect.selectedOptions[0].value];
-        
-        pointBuffer.clear();
-        triangleBuffer.clear();
-        
-        pointsColorBuffer.clear();
-        trianglesColorBuffer.clear();
-        
+
+        vBuffer.clear();
+        cBuffer.clear();
+
         window.requestAnimationFrame(render);
     };
 
@@ -146,14 +145,38 @@ function context3() {
         gl.clearColor(...bgColor, 1.0);
         gl.clear(gl.COLOR_BUFFER_BIT);
 
-        // points
-        pointBuffer.setCurrent();
-        pointsColorBuffer.setCurrent();
-        gl.drawArrays(gl.POINTS, 0, pointBuffer.index);
+        // shapes
+        let i = 0,
+            j = 0;
 
-        triangleBuffer.setCurrent();
-        trianglesColorBuffer.setCurrent();
-        gl.drawArrays(gl.TRIANGLES, 0, triangleBuffer.index);
+        for (let k = 0; k < vBuffer.index;) {
+            if (points[i] == k) {
+                let len = 1;
+
+                for (let ii = i; ii < points.length; ii++) {
+                    if (points[ii + 1] != points[ii] + 1) {
+                        break;
+                    }
+                    len += 1;
+                }
+
+                gl.drawArrays(gl.POINTS, k, len);
+                k += len;
+                i += len;
+            } else if (triangles[j] == k) {
+                let len = 1;
+
+                for (let ii = i; ii < points.length; ii++) {
+                    if (points[ii + 1] != points[ii] + 3) {
+                        break;
+                    }
+                    len += 1;
+                }
+                gl.drawArrays(gl.TRIANGLES, k, len * 3);
+                k += len * 3;
+                j += len;
+            }
+        }
     }
 
     canvas.addEventListener("click", event => {
@@ -164,31 +187,26 @@ function context3() {
         switch (currentMode) {
             default:
             case 0: {
-                pointBuffer.append(vec2(x, y));
-                pointsColorBuffer.append(penColor);
+                points.push(vBuffer.index);
                 break;
             }
             case 1: {
                 if (triangleCounter < 2) {
-                    pointBuffer.append(vec2(x, y));
-                    pointsColorBuffer.append(penColor);
-                    
+                    points.push(vBuffer.index);
                     triangleCounter++;
                 } else {
-                    let v2 = pointBuffer.pop()
-                    let v1 = pointBuffer.pop()
+                    points.pop();
+                    points.pop();
+                    triangles.push(vBuffer.index - 2);
 
-                    let c2 = pointsColorBuffer.pop();
-                    let c1 = pointsColorBuffer.pop();
-
-                    triangleBuffer.extend([v1, v2, vec2(x, y)]);
-                    trianglesColorBuffer.extend([c1, c2, penColor]);
-                    
                     triangleCounter = 0;
                 }
                 break;
             }
         }
+
+        vBuffer.append(vec2(x, y));
+        cBuffer.append(penColor);
 
         window.requestAnimationFrame(render);
     });
