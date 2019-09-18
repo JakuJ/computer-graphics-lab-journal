@@ -73,27 +73,75 @@
                     </p>
                 </td>
                 <td>
-                    <canvas id="canvas2" width="512" height="512">Please use a browser supporting HTML5</canvas>
+                    <div id="left-2">
+                        <canvas id="canvas2" width="512" height="512">Please use a browser supporting HTML5</canvas>
+                    </div>
+                </td>
+                <td>
+                    <div id="right-2">
+                        <button id="clear-canvas-2" class="btn btn-warning">Clear canvas</button>
+                        <select id="colors-2" size="6" style="width: 100%; margin-top: 10px;">
+                            <option value="default">Default</option>
+                            <option value="red">Red</option>
+                            <option value="green">Green</option>
+                            <option value="blue">Blue</option>
+                            <option value="black">Black</option>
+                            <option value="white">White</option>
+                        </select>
+                    </div>
                 </td>
             </tr>
             <tr>
                 <td>
-                    <h3>Part 3 - Triangles</h3>
+                    <h3>Part 3</h3>
                     <p>
                         <ul>
                             <li>
-                                Change the code in the previous example to draw triangles instead of points. [Angel
-                                2.4.2]
+                                We would now like to have two different drawing modes. One where we draw points as
+                                before and one where we interactively build a triangle by placing three points. Add a
+                                button for each drawing mode. [Angel 3.6.2]
                             </li>
                             <li>
-                                Extend the application to include a second color buffer and draw the triangle with a
-                                red, green and blue vertex color. [Angel 2.5.1 and 2.10]
+                                (Hint) The following is closely related to the textbook CAD example [Angel 3.10], where
+                                a polygon is built interactively. The main difference is that we have two drawing modes.
+                            </li>
+                            <li>
+                                Create an empty array of point indices and an empty array of triangle indices. When
+                                drawing
+                                in point mode, we add vertex buffer indices of the points to the array of point indices.
+                                We
+                                also do this in triangle mode for the first two vertices, but with the third mouse
+                                click, we
+                                add the index of the first triangle vertex to the array of triangle indices and remove
+                                the
+                                indices of the first two vertices from the array of point indices. Use push and pop when
+                                working with the arrays.
+                            </li>
+                            <li>
+                                When rendering, draw the vertices in the array of point indices as points and draw the
+                                vertices in the array of triangle indices as triangles. Try to call gl.drawArrays as few
+                                times as possible.
                             </li>
                         </ul>
                     </p>
                 </td>
                 <td>
-                    <canvas id="canvas3" width="512" height="512">Please use a browser supporting HTML5</canvas>
+                    <div id="left-3">
+                        <canvas id="canvas3" width="512" height="512">Please use a browser supporting HTML5</canvas>
+                    </div>
+                </td>
+                <td>
+                    <div id="right-3">
+                        <button id="clear-canvas-3" class="btn btn-warning">Clear canvas</button>
+                        <select id="colors-3" size="6" style="width: 100%; margin-top: 10px;">
+                            <option value="default">Default</option>
+                            <option value="red">Red</option>
+                            <option value="green">Green</option>
+                            <option value="blue">Blue</option>
+                            <option value="black">Black</option>
+                            <option value="white">White</option>
+                        </select>
+                    </div>
                 </td>
             </tr>
             <tr>
@@ -170,8 +218,9 @@
         varying vec3 fColor;
         
         void main() {
-            fColor = vColor;
             gl_Position = vec4(vPosition, 0, 1);
+            gl_PointSize = 20.0;
+            fColor = vColor;
         }
     </script>
     <script id="fragment-shader-2" type="x-shader/x-fragment">
@@ -183,6 +232,28 @@
         }
     </script>
     <script type="text/javascript" src="./script2.js"></script>
+
+    <!-- PART 3 -->
+    <script id="vertex-shader-3" type="x-shader/x-vertex">
+        attribute vec2 vPosition;
+        attribute vec3 vColor;
+        varying vec3 fColor;
+        
+        void main() {
+            gl_Position = vec4(vPosition, 0, 1);
+            gl_PointSize = 20.0;
+            fColor = vColor;
+        }
+    </script>
+    <script id="fragment-shader-3" type="x-shader/x-fragment">
+        precision mediump float;
+        varying vec3 fColor;
+        
+        void main() {
+            gl_FragColor = vec4(fColor, 1);
+        }
+    </script>
+    <script type="text/javascript" src="./script3.js"></script>
 
 </body>
 

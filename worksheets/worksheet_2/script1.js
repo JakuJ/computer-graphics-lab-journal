@@ -37,7 +37,10 @@ function context1() {
             if (this.index >= this.length) {
                 this._resize();
             }
+            
+            gl.bindBuffer(gl.ARRAY_BUFFER, this.buffer);
             gl.bufferSubData(gl.ARRAY_BUFFER, this.offset, flatten(vertex));
+            
             this.index++;
         }
 
@@ -74,25 +77,24 @@ function context1() {
     const vertices = [vec2(0, 0), vec2(1, 0), vec2(1, 1)];
     buffer.extend(vertices);
 
+    function render() {
+        // background
+        gl.clearColor(0.3921, 0.5843, 0.9294, 1.0);
+        gl.clear(gl.COLOR_BUFFER_BIT);
+
+        // points
+        buffer.render(gl.POINTS);
+    }
+
     canvas.addEventListener("click", event => {
         const bbox = event.target.getBoundingClientRect();
         let x = -1 + 2 * (event.clientX - bbox.left) / canvas.width;
         let y = -1 + 2 * (canvas.height - (event.clientY - bbox.top)) / canvas.height;
 
         buffer.append(vec2(x, y));
-    });
-
-    function render() {
-        gl.clear(gl.COLOR_BUFFER_BIT);
-
-        // background
-        gl.clearColor(0.3921, 0.5843, 0.9294, 1.0);
-
-        // points
-        buffer.render(gl.POINTS);
-
+        
         window.requestAnimationFrame(render);
-    }
+    });
 
     window.requestAnimationFrame(render);
 }

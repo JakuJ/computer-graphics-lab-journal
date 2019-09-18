@@ -6,13 +6,13 @@ function setupWebGL(canvas) {
     return WebGLUtils.setupWebGL(canvas);
 }
 
-function context2() {
+function context3() {
     // Prepare WebGL
-    var canvas = document.getElementById("canvas2");
+    var canvas = document.getElementById("canvas3");
     var gl = setupWebGL(canvas);
 
     // Load shaders
-    var program = initShaders(gl, "vertex-shader-2", "fragment-shader-2");
+    var program = initShaders(gl, "vertex-shader-3", "fragment-shader-3");
     gl.useProgram(program);
 
     // Vector-buffer class
@@ -94,8 +94,8 @@ function context2() {
     var bgColor = colors['default'];
     var penColor = colors['black'];
 
-    const clearButton = document.getElementById("clear-canvas-2");
-    const colorSelect = document.getElementById("colors-2");
+    const clearButton = document.getElementById("clear-canvas-3");
+    const colorSelect = document.getElementById("colors-3");
     
     clearButton.onclick = () => {
         bgColor = colors[colorSelect.selectedOptions[0].value];
@@ -131,4 +131,4 @@ function context2() {
     window.requestAnimationFrame(render);
 }
 
-context2()
+context3()
