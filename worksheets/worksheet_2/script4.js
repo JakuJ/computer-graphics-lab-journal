@@ -6,9 +6,9 @@ function setupWebGL(canvas) {
     return WebGLUtils.setupWebGL(canvas);
 }
 
-function context3() {
+function context4() {
     // Prepare WebGL
-    var canvas = document.getElementById("canvas3");
+    var canvas = document.getElementById("canvas4");
     var gl = setupWebGL(canvas);
 
     // Load shaders
@@ -26,19 +26,16 @@ function context3() {
 
         append(vertex) {
             if (this.index >= this.length) {
+                this.array.push(vertex);
                 this._resize();
+            } else {
+                gl.bindBuffer(gl.ARRAY_BUFFER, this.buffer);
+                gl.bufferSubData(gl.ARRAY_BUFFER, this.offset, flatten(vertex));
+                this.array.push(vertex);
             }
-
-            this.array.push(vertex);
-
-            gl.bindBuffer(gl.ARRAY_BUFFER, this.buffer);
-            gl.bufferSubData(gl.ARRAY_BUFFER, this.offset, flatten(vertex));
-
-            this.index++;
         }
 
         pop() {
-            this.index = Math.max(0, this.index - 1);
             return this.array.pop();
         }
 
@@ -53,9 +50,8 @@ function context3() {
             this._newBuffer();
         }
 
-        setCurrent() {
-            gl.bindBuffer(gl.ARRAY_BUFFER, this.buffer);
-            this._setAttribs();
+        get index() {
+            return this.array.length;
         }
 
         get offset() {
@@ -67,13 +63,13 @@ function context3() {
         }
 
         _newBuffer() {
-            this.index = 0;
-            this.length = 4;
-            this.buffer = gl.createBuffer();
             this.array = [];
-
+            this.length = 4;
+            
+            this.buffer = gl.createBuffer();
             gl.bindBuffer(gl.ARRAY_BUFFER, this.buffer);
             this._setAttribs();
+            
             gl.bufferData(gl.ARRAY_BUFFER, this.size, gl.STATIC_DRAW);
         }
 
@@ -86,7 +82,8 @@ function context3() {
         _resize() {
             this.length *= 2;
             gl.bindBuffer(gl.ARRAY_BUFFER, this.buffer);
-            gl.bufferData(gl.ARRAY_BUFFER, this.size * 2, gl.STATIC_DRAW);
+            gl.bufferData(gl.ARRAY_BUFFER, this.size, gl.STATIC_DRAW);
+            gl.bufferSubData(gl.ARRAY_BUFFER, 0, flatten(this.array));
         }
     }
 
@@ -106,17 +103,22 @@ function context3() {
     var bgColor = colors['default'];
     var penColor = colors['black'];
 
-    const clearButton = document.getElementById("clear-canvas-3");
-    const colorSelect = document.getElementById("colors-3");
+    const clearButton = document.getElementById("clear-canvas-4");
+    const colorSelect = document.getElementById("colors-4");
 
-    const pointsButton = document.getElementById("point-mode-3");
-    const trianglesButton = document.getElementById("triangle-mode-3");
+    const pointsButton = document.getElementById("point-mode-4");
+    const trianglesButton = document.getElementById("triangle-mode-4");
+    const circlesButton = document.getElementById("circle-mode-4");
 
-    var currentMode = 0 // [points, triangles]
+    var currentMode = 0 // [points, triangles, circles]
     var triangleCounter = 0;
+    var circleCounter = 0;
+    var circleCenter = [-1, -1];
+    const circleDensity = 40;
 
     var points = [];
     var triangles = [];
+    var circles = [];
 
     pointsButton.onclick = () => {
         currentMode = 0;
@@ -127,6 +129,11 @@ function context3() {
         triangleCounter = 0;
     }
 
+    circlesButton.onclick = () => {
+        currentMode = 2;
+        circleCounter = 0;
+    }
+
     clearButton.onclick = () => {
         bgColor = colors[colorSelect.selectedOptions[0].value];
 
@@ -135,7 +142,9 @@ function context3() {
 
         points = [];
         triangles = [];
+        circles = [];
         triangleCounter = 0;
+        circleCounter = 0;
 
         window.requestAnimationFrame(render);
     };
@@ -151,7 +160,8 @@ function context3() {
 
         // shapes
         let i = 0,
-            j = 0;
+            j = 0,
+            l = 0;
 
         for (let k = 0; k < vBuffer.index;) {
             if (points[i] == k) {
@@ -165,6 +175,7 @@ function context3() {
                 }
 
                 gl.drawArrays(gl.POINTS, k, len);
+
                 k += len;
                 i += len;
             } else if (triangles[j] == k) {
@@ -176,9 +187,16 @@ function context3() {
                     }
                     len += 1;
                 }
+
                 gl.drawArrays(gl.TRIANGLES, k, len * 3);
+
                 k += len * 3;
                 j += len;
+            } else if (circles[l] == k) {
+                gl.drawArrays(gl.TRIANGLE_FAN, k, circleDensity + 1); // including middle point
+
+                k += circleDensity + 1;
+                l++;
             }
         }
     }
@@ -207,10 +225,42 @@ function context3() {
                 }
                 break;
             }
+            case 2: {
+                if (circleCounter == 0) {
+                    points.push(vBuffer.index);
+
+                    vBuffer.append(vec2(x, y));
+                    cBuffer.append(penColor);
+
+                    circleCenter = [x, y];
+                    circleCounter++;
+                } else {
+                    points.pop();
+                    circles.push(vBuffer.index - 1);
+                    circleCounter = 0;
+
+                    let [x0, y0] = circleCenter;
+                    let dx = x0 - x;
+                    let dy = y0 - y;
+                    let R = length([dx, dy]);
+
+                    for (let i = 0; i < circleDensity - 1; i++) {
+                        let a = 2 * Math.PI * i / (circleDensity - 1);
+                        vBuffer.append(vec2(R * Math.cos(a) + x0, R * Math.sin(a) + y0));
+                        cBuffer.append(penColor);
+                    }
+
+                    vBuffer.append(vec2(R + x0, y0));
+                    cBuffer.append(penColor);
+                }
+                break;
+            }
         }
 
-        vBuffer.append(vec2(x, y));
-        cBuffer.append(penColor);
+        if (currentMode != 2) {
+            vBuffer.append(vec2(x, y));
+            cBuffer.append(penColor);
+        }
 
         window.requestAnimationFrame(render);
     });
@@ -218,4 +268,4 @@ function context3() {
     window.requestAnimationFrame(render);
 }
 
-context3()
+context4()

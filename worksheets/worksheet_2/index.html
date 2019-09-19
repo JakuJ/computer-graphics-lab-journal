@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>Worksheet 1</title>
+    <title>Worksheet 2</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="author" content="Jakub Janaszkiewicz">
@@ -24,6 +24,7 @@
         <thead>
             <th>Exercise</th>
             <th>Solution</th>
+            <th></th>
         </thead>
         <tbody>
             <tr>
@@ -85,7 +86,7 @@
                             <option value="red">Red</option>
                             <option value="green">Green</option>
                             <option value="blue">Blue</option>
-                            <option value="black">Black</option>
+                            <option value="black" selected="selected">Black</option>
                             <option value="white">White</option>
                         </select>
                     </div>
@@ -138,54 +139,61 @@
                             <option value="red">Red</option>
                             <option value="green">Green</option>
                             <option value="blue">Blue</option>
-                            <option value="black">Black</option>
+                            <option value="black" selected="selected">Black</option>
                             <option value="white">White</option>
                         </select>
-                        <button id="point-mode-3" class="btn btn-success" style="width: 100%; margin-top: 10px;">Points</button>
-                        <button id="triangle-mode-3" class="btn btn-success" style="width: 100%; margin-top: 10px;">Triangles</button>
+                        <button id="point-mode-3" class="btn btn-success"
+                            style="width: 100%; margin-top: 10px;">Points</button>
+                        <button id="triangle-mode-3" class="btn btn-success"
+                            style="width: 100%; margin-top: 10px;">Triangles</button>
                     </div>
                 </td>
             </tr>
             <tr>
                 <td>
-                    <h3>Part 4 - A rotating square</h3>
+                    <h3>Part 4</h3>
                     <p>
                         <ul>
                             <li>
-                                Add a second triangle to the previous part such that you have a quadrilateral (which is
-                                maybe even a square). [Angel 2.4]
+                                Add a button for a circle drawing mode. [Angel 3.6.2]
                             </li>
                             <li>
-                                Center your quad (short form of quadrilateral) and rotate it such that it has its
-                                vertices on the coordinate axes.
+                                Create an array for circle indices. When drawing in circle mode, add
+                                a point on the first click. On the second click add vertices for the circumference as in
+                                Part 5 of Worksheet 1 using the position of the second click to set the circle radius.
+                                As with the triangle, add the index of the center vertex to the array of circle indices
+                                and remove this index from the array of point indices.
                             </li>
                             <li>
-                                Add a rotation so the quad rotates around its center. Animate the rotation angle over
-                                time. Use requestAnimFrame to continuously call your render function. [Angel 3.1]
+                                Draw each circle as a triangle fan when rendering.
                             </li>
+
                         </ul>
                     </p>
                 </td>
                 <td>
-                    <canvas id="canvas4" width="512" height="512">Please use a browser supporting HTML5</canvas>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <h3>Part 5 - A fan of triangles</h3>
-                    <p>
-                        <ul>
-                            <li>
-                                Create and draw a circle using the triangle fan drawing mode. [Angel 2.4.2]
-                            </li>
-                            <li>
-                                Make the circle bounce up and down over time.
-                            </li>
-                        </ul>
-                    </p>
+                    <div id="left-4">
+                        <canvas id="canvas4" width="512" height="512">Please use a browser supporting HTML5</canvas>
+                    </div>
                 </td>
                 <td>
-                    <canvas id="canvas5" width="512" height="512">Please use a browser supporting HTML5</canvas>
+                    <div id="right-4">
+                        <button id="clear-canvas-4" class="btn btn-warning">Clear canvas</button>
+                        <select id="colors-4" size="6" style="width: 100%; margin-top: 10px;">
+                            <option value="default">Default</option>
+                            <option value="red">Red</option>
+                            <option value="green">Green</option>
+                            <option value="blue">Blue</option>
+                            <option value="black" selected="selected">Black</option>
+                            <option value="white">White</option>
+                        </select>
+                        <button id="point-mode-4" class="btn btn-success"
+                            style="width: 100%; margin-top: 10px;">Points</button>
+                        <button id="triangle-mode-4" class="btn btn-success"
+                            style="width: 100%; margin-top: 10px;">Triangles</button>
+                        <button id="circle-mode-4" class="btn btn-success"
+                            style="width: 100%; margin-top: 10px;">Circles</button>
+                    </div>
                 </td>
             </tr>
         </tbody>
@@ -213,7 +221,7 @@
     </script>
     <script type="text/javascript" src="./script1.js"></script>
 
-    <!-- PART 2 -->
+    <!-- PART 2 and forward -->
     <script id="vertex-shader-2" type="x-shader/x-vertex">
         attribute vec2 vPosition;
         attribute vec3 vColor;
@@ -234,29 +242,8 @@
         }
     </script>
     <script type="text/javascript" src="./script2.js"></script>
-
-    <!-- PART 3 -->
-    <script id="vertex-shader-3" type="x-shader/x-vertex">
-        attribute vec2 vPosition;
-        attribute vec3 vColor;
-        varying vec3 fColor;
-        
-        void main() {
-            gl_Position = vec4(vPosition, 0, 1);
-            gl_PointSize = 20.0;
-            fColor = vColor;
-        }
-    </script>
-    <script id="fragment-shader-3" type="x-shader/x-fragment">
-        precision mediump float;
-        varying vec3 fColor;
-        
-        void main() {
-            gl_FragColor = vec4(fColor, 1);
-        }
-    </script>
     <script type="text/javascript" src="./script3.js"></script>
-
+    <script type="text/javascript" src="./script4.js"></script>
 </body>
 
 </html>
