@@ -43,7 +43,7 @@ function context1() {
     var elems = [];
 
     function quad(a, b, c, d) {
-        var indices = [a, b, c, a, c, d];
+        var indices = [a, b, b, c, c, d, d, a];
         elems.push(...indices.map(x => x - 1));
     }
 
@@ -85,8 +85,6 @@ function context1() {
     function render(time) {
         // background
         gl.clearColor(0.7, 0.7, 0.7, 1.0);
-        gl.enable(gl.DEPTH_TEST);
-        gl.enable(gl.CULL_FACE);
         gl.clear(gl.COLOR_BUFFER_BIT);
 
         // view
@@ -96,7 +94,7 @@ function context1() {
         gl.uniformMatrix4fv(uLocation, false, flatten(viewMatrix));
 
         // points
-        gl.drawElements(gl.LINE_STRIP, elems.length, gl.UNSIGNED_BYTE, 0);
+        gl.drawElements(gl.LINES, elems.length, gl.UNSIGNED_BYTE, 0);
         window.requestAnimationFrame(render);
     }
 

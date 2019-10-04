@@ -7,7 +7,7 @@ function setupWebGL(canvas) {
     return WebGLUtils.setupWebGL(canvas);
 }
 
-function context1() {
+function context2() {
     // Prepare WebGL
     var canvas = document.getElementById("canvas2");
     var gl = setupWebGL(canvas);
@@ -43,8 +43,7 @@ function context1() {
     var elems = [];
 
     function quad(a, b, c, d) {
-        var indices = [a, b, c, a, c, d];
-        //var indices = [a, b, c];
+        var indices = [a, b, b, c, c, d, d, a];
         elems.push(...indices.map(x => x - 1));
     }
 
@@ -85,14 +84,12 @@ function context1() {
 
     function render() {
         gl.clearColor(0.7, 0.7, 0.7, 1.0);
-        gl.enable(gl.DEPTH_TEST);
-        gl.enable(gl.CULL_FACE);
         gl.cullFace(gl.BACK);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
         // Projection 1
         var viewMatrix1 = [
-            translate(-.5, .5, 0),
+            translate(0, .5, 0),
             scalem(.5, .5, .5),
             perspective(45, 1, 2, 3),
             lookAt(vec3(.5, .5, 3), vec3(.5, .5, .5), vec3(0, 1, 0))
@@ -101,11 +98,11 @@ function context1() {
         
         let uLocation1 = gl.getUniformLocation(program, 'vMatrix');
         gl.uniformMatrix4fv(uLocation1, false, flatten(viewMatrix1));
-        gl.drawElements(gl.LINE_STRIP, elems.length, gl.UNSIGNED_BYTE, 0);
+        gl.drawElements(gl.LINES, elems.length, gl.UNSIGNED_BYTE, 0);
 
         // Projection 2
         var viewMatrix2 = [
-            translate(.5, .5, 0),
+            translate(-.5, -.5, 0),
             scalem(.5, .5, .5),
             perspective(45, 1, 1, 10),
             translate(0, 0, -2),
@@ -114,11 +111,11 @@ function context1() {
 
         let uLocation2 = gl.getUniformLocation(program, 'vMatrix');
         gl.uniformMatrix4fv(uLocation2, false, flatten(viewMatrix2));
-        gl.drawElements(gl.LINE_STRIP, elems.length, gl.UNSIGNED_BYTE, 0);
+        gl.drawElements(gl.LINES, elems.length, gl.UNSIGNED_BYTE, 0);
 
         // Projection 3
         var viewMatrix3 = [
-            translate(-.5, -.5, 0),
+            translate(.5, -.5, 0),
             scalem(.5, .5, .5),
             perspective(45, 1, 1, 2),
             translate(0, 0, -2),
@@ -127,10 +124,10 @@ function context1() {
 
         let uLocation3 = gl.getUniformLocation(program, 'vMatrix');
         gl.uniformMatrix4fv(uLocation3, false, flatten(viewMatrix3));
-        gl.drawElements(gl.LINE_STRIP, elems.length, gl.UNSIGNED_BYTE, 0);
+        gl.drawElements(gl.LINES, elems.length, gl.UNSIGNED_BYTE, 0);
     }
 
     window.requestAnimationFrame(render);
 }
 
-context1()
+context2()
