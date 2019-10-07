@@ -12,6 +12,10 @@
             table-layout: auto;
         }
 
+        td {
+            max-width: 50vw;
+        }
+
         th {
             text-align: center;
             font-size: 150%;
@@ -30,27 +34,25 @@
             <tr>
                 <td>
                     <h3>Part 1</h3>
-                    <p>
-                        Draw a wireframe unit cube in isometric view.
-                        <ul>
-                            <li>
-                                The default viewing volume uses orthographic projection.
-                                Draw a cube using orthographic projection. [Angel 2.6.1, 4.6]
-                            </li>
-                            <li>
-                                Position the cube in the world coordinate system with its
-                                diagonal going from (0, 0, 0) to (1, 1, 1).
-                            </li>
-                            <li>
-                                Draw lines instead of triangles to draw in wireframe.
-                                [Angel 2.4]
-                            </li>
-                            <li>
-                                Build a model-view matrix that transforms the cube vertices so
-                                that the cube is in isometric view. [Angel 4.12, 5.1.3, 5.3]
-                            </li>
-                        </ul>
-                    </p>
+                    Draw a wireframe unit cube in isometric view.
+                    <ul>
+                        <li>
+                            The default viewing volume uses orthographic projection.
+                            Draw a cube using orthographic projection. [Angel 2.6.1, 4.6]
+                        </li>
+                        <li>
+                            Position the cube in the world coordinate system with its
+                            diagonal going from (0, 0, 0) to (1, 1, 1).
+                        </li>
+                        <li>
+                            Draw lines instead of triangles to draw in wireframe.
+                            [Angel 2.4]
+                        </li>
+                        <li>
+                            Build a model-view matrix that transforms the cube vertices so
+                            that the cube is in isometric view. [Angel 4.12, 5.1.3, 5.3]
+                        </li>
+                    </ul>
                 </td>
                 <td>
                     <canvas id="canvas1" width="512" height="512">Please use a browser supporting HTML5</canvas>
@@ -59,24 +61,60 @@
             <tr>
                 <td>
                     <h3>Part 2</h3>
-                    <p>
-                        Draw the unit cube in different classical perspective views.
-                        <ul>
-                            <li>
-                                Introduce a projection matrix that sets the camera to be a
-                                pinhole camera with a 45 degrees vertical field of view. [Angel 1.4.1, 5.5-5.7]
-                            </li>
-                            <li>
-                                Draw the cube three times in the same rendering. Transform the
-                                cubes so that one is in one-point (front) perspective, one is in two-point (X)
-                                perspective, and one is in three-point perspective. [Angel 4.9-4.11, 5.1.5]
-                            </li>
-                        </ul>
+                    Draw the unit cube in different classical perspective views.
+                    <ul>
+                        <li>
+                            Introduce a projection matrix that sets the camera to be a
+                            pinhole camera with a 45 degrees vertical field of view. [Angel 1.4.1, 5.5-5.7]
+                        </li>
+                        <li>
+                            Draw the cube three times in the same rendering. Transform the
+                            cubes so that one is in one-point (front) perspective, one is in two-point (X)
+                            perspective, and one is in three-point perspective. [Angel 4.9-4.11, 5.1.5]
+                        </li>
+                    </ul>
                 </td>
                 <td>
                     <canvas id="canvas2" width="512" height="512">Please use a browser supporting HTML5</canvas>
                 </td>
             </tr>
+            <tr>
+                <td>
+                    <h3>Part 3</h3>
+                    Reflect on the theory of affine transformations and viewing transformations by doing the following:
+                    <ul>
+                        <li>
+                            List the transformation matrices that you used in Parts 1 and 2 (use general expressions
+                            rather than concrete numbers). [Angel 4.9, 5.3-5.5]
+                        </li>
+                        <li>
+                            For each cube, write down a formula showing how the matrices were concatenated to become the
+                            current transformation matrix (CTM) that was used to transform the vertices in the vertex
+                            shader. [Angel 4.10-4.11]
+                        </li>
+                    </ul>
+                </td>
+                <td>
+                    <ul>
+                        <li>
+                            Matrices used:
+                            <ul>
+                                <li>Part 1 - Translation matrix, rotation around Y axis, rotation around X axis</li>
+                                <li>Part 2 - Translation matrix, scaling matrix, perspective matrix, look-at matrix</li>
+                            </ul>
+                        </li>
+                        <li>
+                            CTM formulas:
+                            <ul>
+                                <li>Part 1: CTM = rotateX * rotateY * translate</li>
+                                <li>Part 2, 1-point: CTM = translate * scalem * perspective * lookAt</li>
+                                <li>Part 2, 2 and 3-point: CTM = translate * scalem * perspective * translate * lookAt</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </td>
+            </tr>
+
         </tbody>
     </table>
 
