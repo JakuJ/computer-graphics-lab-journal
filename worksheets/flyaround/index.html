@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Fly around</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="Jakub Janaszkiewicz">
+    <link rel="stylesheet" href="../../vendor/bootstrap/css/bootstrap.min.css">
+    <style>
+        html,body {
+            height: 100%;
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="canvas1">Please use a browser supporting HTML5</canvas>
+
+    <script type="text/javascript" src="../../common/webgl-utils.js"></script>
+    <script type="text/javascript" src="../../common/initShaders.js"></script>
+    <script type="text/javascript" src="../../common/MV.js"></script>
+
+    <script id="vertex-shader" type="x-shader/x-vertex">
+        attribute vec3 vPosition;
+        uniform mat4 vMatrix;
+        uniform vec3 vGradient;
+        uniform vec3 vBias;
+        
+        varying vec3 fColor;
+        
+        void main() {
+            gl_Position = vMatrix * vec4(vPosition, 1);
+            gl_PointSize = 1.1;
+            fColor = vPosition.y * vGradient + vBias;
+        }
+    </script>
+    <script id="fragment-shader" type="x-shader/x-fragment">
+        precision mediump float;
+        varying vec3 fColor;
+        
+        void main() {
+            gl_FragColor = vec4(fColor, 1);
+        }
+    </script>
+    <script type="text/javascript" src="./fly_around.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Worksheet 3</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="Jakub Janaszkiewicz">
+    <link rel="stylesheet" href="../../vendor/bootstrap/css/bootstrap.min.css">
+    <style>
+        table {
+            table-layout: auto;
+        }
+
+        th {
+            text-align: center;
+            font-size: 150%;
+        }
+    </style>
+</head>
+
+<body>
+    <table class="table">
+        <thead>
+            <th>Exercise</th>
+            <th>Solution</th>
+            <th></th>
+        </thead>
+        <tbody>
+            <tr>
+                <td>
+                    <h3>Part 1-1</h3>
+                    Draw a sphere in perspective view.
+                    <ul>
+                        <li>
+                            Start from Part 2 of Worksheet 3, which draws three wireframe cubes in perspective view.
+                            Simplify such that you draw just one cube in the image center and switch to drawing
+                            triangles instead of wireframe. [Angel 2.4.2, 4.6, 5.3, 5.6]
+                        </li>
+                    </ul>
+                </td>
+                <td>
+                    <canvas id="canvas1_1" width="512" height="512">Please use a browser supporting HTML5</canvas>
+                </td>
+            </tr>
+            <tr>
+                    <td>
+                        <h3>Part 1-2</h3>
+                        Draw a sphere in perspective view.
+                        <ul>
+                            <li>
+                                Draw a unit sphere instead of a unit cube using recursive subdivision of a tetrahedron.
+                                [Angel 6.6]
+                            </li>
+                            <li>
+                                Insert two buttons: one which increments the subdivision level and one which decrements
+                                the subdivision level. [Angel 3.6.2]
+                            </li>
+                        </ul>
+                    </td>
+                    <td>
+                        <canvas id="canvas1_2" width="512" height="512">Please use a browser supporting HTML5</canvas>
+                    </td>
+                </tr>
+        </tbody>
+    </table>
+
+    <script type="text/javascript" src="../../common/webgl-utils.js"></script>
+    <script type="text/javascript" src="../../common/initShaders.js"></script>
+    <script type="text/javascript" src="../../common/MV.js"></script>
+
+    <!-- PART 1 and beyond -->
+    <script id="vertex-shader-1" type="x-shader/x-vertex">
+        attribute vec3 vPosition;
+        uniform mat4 vMatrix;
+        attribute vec3 vColor;
+        varying vec3 fColor;
+        
+        void main() {
+            gl_Position = vMatrix * vec4(vPosition, 1);
+            fColor = vColor;
+        }
+    </script>
+    <script id="fragment-shader-1" type="x-shader/x-fragment">
+        precision mediump float;
+        varying vec3 fColor;
+        
+        void main() {
+            gl_FragColor = vec4(fColor, 1);
+        }
+    </script>
+    <script type="text/javascript" src="./script1_1.js"></script>
+    <script type="text/javascript" src="./script1_2.js"></script>
+</body>
+
+</html>
