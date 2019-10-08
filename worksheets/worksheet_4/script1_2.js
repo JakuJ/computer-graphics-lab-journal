@@ -13,56 +13,74 @@ function context() {
     var gl = setupWebGL(canvas);
 
     // Load shaders
-    var program = initShaders(gl, "vertex-shader-1", "fragment-shader-1");
+    var program = initShaders(gl, "vertex-shader-2", "fragment-shader-2");
     gl.useProgram(program);
 
     // POSITIONS
     const vertices = [
-        vec3(1, 1, 1),
         vec3(1, -1, -1),
+        vec3(-1, 1, -1),
         vec3(-1, -1, 1),
-        vec3(-1, 1, -1)
-    ];
+        vec3(1, 1, 1),
+    ].map(x => scale(1 / Math.sqrt(3), x));
 
     var elems = [];
 
     function triangle(a, b, c) {
-        var indices = [a, b, c];
-        elems.push(...indices.map(x => x - 1));
+        // elems.push(a, b, b, c, c, a); // LINES
+        elems.push(a, c, b); // TRIANGLES
     }
 
-    function colorTetraheron() {
-        triangle(1, 4, 3);
-        triangle(3, 2, 1);
-        triangle(4, 1, 2);
-        triangle(3, 4, 2);
+    function tetrahedron(a, b, c, d, n) {
+        divideTriangle(a, b, c, n);
+        divideTriangle(d, c, b, n);
+        divideTriangle(a, d, b, n);
+        divideTriangle(a, c, d, n);
     }
 
-    colorTetraheron();
+    function divideTriangle(a, b, c, count) {
+        if (count > 1) {
+            var ab = normalize(mix(a, b, 0.5));
+            var ac = normalize(mix(a, c, 0.5));
+            var bc = normalize(mix(b, c, 0.5));
 
-    {
+            divideTriangle(a, ab, ac, count - 1);
+            divideTriangle(ab, b, bc, count - 1);
+            divideTriangle(bc, c, ac, count - 1);
+            divideTriangle(ab, bc, ac, count - 1);
+        } else {
+            triangle(a, b, c);
+        }
+    }
+
+    function redraw_sphere(subdivision) {
+        elems = [];
+        tetrahedron(...vertices, subdivision);
+
         let buffer = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-        gl.bufferData(gl.ARRAY_BUFFER, flatten(vertices), gl.STATIC_DRAW);
+        gl.bufferData(gl.ARRAY_BUFFER, flatten(elems), gl.STATIC_DRAW);
 
         let vLocation = gl.getAttribLocation(program, 'vPosition');
         gl.vertexAttribPointer(vLocation, 3, gl.FLOAT, false, 0, 0);
         gl.enableVertexAttribArray(vLocation);
-    } {
-        let buffer = gl.createBuffer();
-        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, buffer);
-        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint8Array(elems), gl.STATIC_DRAW);
     }
 
     var subdivision = 1;
+    redraw_sphere(subdivision);
 
-    document.getElementById("increase_subdivision").onclick = e => {
-        subdivision = Math.min(10, subdivision + 1);
-    };
+    function increase_subdivision() {
+        subdivision = Math.min(8, subdivision + 1);
+        redraw_sphere(subdivision);
+    }
 
-    document.getElementById("decrease_subdivision").onclick = e => {
+    function decrease_subdivision() {
         subdivision = Math.max(1, subdivision - 1);
-    };
+        redraw_sphere(subdivision);
+    }
+
+    document.getElementById("increase_subdivision").onclick = increase_subdivision;
+    document.getElementById("decrease_subdivision").onclick = decrease_subdivision;
 
     function render(time) {
         // background
@@ -72,16 +90,15 @@ function context() {
         // view
         var viewMatrix = [
             perspective(45, 1, 1, 6),
-            translate(0, 0, -3),
             rotateZ(time / 20),
-            lookAt(vec3(1, 1, 1), vec3(0, 0, 0), vec3(0, 1, 0)),
+            lookAt(vec3(2, 2, 2), vec3(0, 0, 0), vec3(0, 1, 0)),
         ].reduce(mult);
 
         let uLocation = gl.getUniformLocation(program, 'vMatrix');
         gl.uniformMatrix4fv(uLocation, false, flatten(viewMatrix));
 
         // points
-        gl.drawElements(gl.TRIANGLES, elems.length, gl.UNSIGNED_BYTE, 0);
+        gl.drawArrays(gl.TRIANGLES, 0, elems.length);
         window.requestAnimationFrame(render);
     }
 

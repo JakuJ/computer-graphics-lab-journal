@@ -74,15 +74,16 @@
     <script type="text/javascript" src="../../common/initShaders.js"></script>
     <script type="text/javascript" src="../../common/MV.js"></script>
 
-    <!-- PART 1 and beyond -->
+    <!-- PART 1 -->
     <script id="vertex-shader-1" type="x-shader/x-vertex">
         attribute vec3 vPosition;
         uniform mat4 vMatrix;
+        attribute vec3 vColor;
         varying vec3 fColor;
         
         void main() {
             gl_Position = vMatrix * vec4(vPosition, 1);
-            fColor = 0.5 * vPosition + 0.5;
+            fColor = vColor;
         }
     </script>
     <script id="fragment-shader-1" type="x-shader/x-fragment">
@@ -94,6 +95,27 @@
         }
     </script>
     <script type="text/javascript" src="./script1_1.js"></script>
+
+    <!-- PART 2 -->
+    <script id="vertex-shader-2" type="x-shader/x-vertex">
+        attribute vec3 vPosition;
+        uniform mat4 vMatrix;
+        varying vec3 fColor;
+        
+        void main() {
+            gl_Position = vMatrix * vec4(vPosition, 1);
+            fColor = 0.5 * vPosition + 0.5;
+        }
+    </script>
+    <script id="fragment-shader-2" type="x-shader/x-fragment">
+        precision mediump float;
+        varying vec3 fColor;
+        
+        void main() {
+            gl_FragColor = vec4(fColor, 1);
+        }
+    </script>
+    <script type="text/javascript" src="../../common/simple_camera.js"></script>
     <script type="text/javascript" src="./script1_2.js"></script>
 </body>
 
