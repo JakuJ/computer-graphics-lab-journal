@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>Worksheet 3</title>
+    <title>Worksheet 4</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="author" content="Jakub Janaszkiewicz">
@@ -60,6 +60,11 @@
                     </td>
                     <td>
                         <canvas id="canvas1_2" width="512" height="512">Please use a browser supporting HTML5</canvas>
+                        <p>
+                            Subdivision level: &nbsp; &nbsp;
+                            <button id="increase_subdivision" class="btn btn-success">Increase</button>
+                            <button id="decrease_subdivision" class="btn btn-warning">Decrease</button>
+                        </p>
                     </td>
                 </tr>
         </tbody>
@@ -73,12 +78,11 @@
     <script id="vertex-shader-1" type="x-shader/x-vertex">
         attribute vec3 vPosition;
         uniform mat4 vMatrix;
-        attribute vec3 vColor;
         varying vec3 fColor;
         
         void main() {
             gl_Position = vMatrix * vec4(vPosition, 1);
-            fColor = vColor;
+            fColor = 0.5 * vPosition + 0.5;
         }
     </script>
     <script id="fragment-shader-1" type="x-shader/x-fragment">

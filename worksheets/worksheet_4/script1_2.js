@@ -24,14 +24,6 @@ function context() {
         vec3(-1, 1, -1)
     ];
 
-
-    const vertexColors = [
-        [1.0, 1.0, 1.0], // white
-        [0.0, 1.0, 0.0], // green
-        [0.0, 0.0, 1.0], // blue
-        [1.0, 0.0, 0.0], // red
-    ];
-
     var elems = [];
 
     function triangle(a, b, c) {
@@ -48,29 +40,29 @@ function context() {
 
     colorTetraheron();
 
-    const vPosition = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, vPosition);
-    gl.bufferData(gl.ARRAY_BUFFER, flatten(vertices), gl.STATIC_DRAW);
-
     {
+        let buffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+        gl.bufferData(gl.ARRAY_BUFFER, flatten(vertices), gl.STATIC_DRAW);
+
         let vLocation = gl.getAttribLocation(program, 'vPosition');
         gl.vertexAttribPointer(vLocation, 3, gl.FLOAT, false, 0, 0);
         gl.enableVertexAttribArray(vLocation);
+    } {
+        let buffer = gl.createBuffer();
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, buffer);
+        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint8Array(elems), gl.STATIC_DRAW);
     }
 
-    const vColor = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, vColor);
-    gl.bufferData(gl.ARRAY_BUFFER, flatten(vertexColors), gl.STATIC_DRAW);
+    var subdivision = 1;
 
-    {
-        let vLocation = gl.getAttribLocation(program, 'vColor');
-        gl.vertexAttribPointer(vLocation, 3, gl.FLOAT, false, 0, 0);
-        gl.enableVertexAttribArray(vLocation);
-    }
+    document.getElementById("increase_subdivision").onclick = e => {
+        subdivision = Math.min(10, subdivision + 1);
+    };
 
-    const vElems = gl.createBuffer();
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, vElems);
-    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint8Array(elems), gl.STATIC_DRAW);
+    document.getElementById("decrease_subdivision").onclick = e => {
+        subdivision = Math.max(1, subdivision - 1);
+    };
 
     function render(time) {
         // background
@@ -79,8 +71,7 @@ function context() {
 
         // view
         var viewMatrix = [
-            //perspective(45, 1, 1, 6),
-            ortho(-2, 2, -2, 2, 0, 5),
+            perspective(45, 1, 1, 6),
             translate(0, 0, -3),
             rotateZ(time / 20),
             lookAt(vec3(1, 1, 1), vec3(0, 0, 0), vec3(0, 1, 0)),
