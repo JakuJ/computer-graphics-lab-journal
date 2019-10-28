@@ -9,11 +9,11 @@ function setupWebGL(canvas) {
 
 function context() {
     // Prepare WebGL
-    var canvas = document.getElementById("canvas4");
+    var canvas = document.getElementById("canvas5");
     var gl = setupWebGL(canvas);
 
     // Load shaders
-    var program = initShaders(gl, "vertex-shader-4", "fragment-shader-4");
+    var program = initShaders(gl, "vertex-shader-5", "fragment-shader-5");
     gl.useProgram(program);
 
     // POSITIONS
@@ -79,8 +79,8 @@ function context() {
         redraw_sphere(subdivision);
     }
 
-    document.getElementById("increase_subdivision4").onclick = increase_subdivision;
-    document.getElementById("decrease_subdivision4").onclick = decrease_subdivision;
+    document.getElementById("increase_subdivision5").onclick = increase_subdivision;
+    document.getElementById("decrease_subdivision5").onclick = decrease_subdivision;
 
     function render(time) {
         // background
@@ -104,14 +104,14 @@ function context() {
         }
 
         var uniforms = {
-            'Ka': document.getElementById("ka4").value,
-            'Kd': document.getElementById("kd4").value,
-            'Ks': document.getElementById("ks4").value,
-            'shininess': document.getElementById("alpha4").value,
+            'Ka': document.getElementById("ka5").value,
+            'Kd': document.getElementById("kd5").value,
+            'Ks': document.getElementById("ks5").value,
+            'shininess': document.getElementById("alpha5").value,
             'emission': vec3(
-                document.getElementById("red4").value,
-                document.getElementById("green4").value,
-                document.getElementById("blue4").value
+                document.getElementById("red5").value,
+                document.getElementById("green5").value,
+                document.getElementById("blue5").value
             )
         };
 

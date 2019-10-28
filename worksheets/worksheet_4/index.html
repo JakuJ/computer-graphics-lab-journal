@@ -128,34 +128,173 @@
                         <div>
                             <div>
                                 K_ambient &nbsp; &nbsp; &nbsp;
-                                <input id="ka" name="ka" type="range" min="0" max="1" step="0.01" value="0.3"/>
+                                <input id="ka4" name="ka" type="range" min="0" max="1" step="0.01" value="0.3" />
                             </div>
                             <div>
                                 K_diffuse &nbsp; &nbsp; &nbsp;
-                                <input id="kd" name="kd" type="range" min="0" max="1" step="0.01" value="0.8"/>
+                                <input id="kd4" name="kd" type="range" min="0" max="1" step="0.01" value="0.8" />
                             </div>
                             <div>
                                 K_specular &nbsp; &nbsp; &nbsp;
-                                <input id="ks" name="ks" type="range" min="0" max="1" step="0.01" value="1"/>
+                                <input id="ks4" name="ks" type="range" min="0" max="1" step="0.01" value="1" />
                             </div>
                             <div>
                                 Shininess &nbsp; &nbsp; &nbsp;
-                                <input id="alpha" name="alpha" type="range" min="1" max="20" step="0.1" value="10"/>
+                                <input id="alpha4" name="alpha" type="range" min="1" max="20" step="0.1" value="10" />
                             </div>
                             <div>
                                 Light red &nbsp; &nbsp; &nbsp;
-                                <input id="red" name="red" type="range" min="0" max="1" step="0.01" value="1"/>
+                                <input id="red4" name="red" type="range" min="0" max="1" step="0.01" value="1" />
                             </div>
                             <div>
                                 Light green &nbsp; &nbsp; &nbsp;
-                                <input id="green" name="green" type="range" min="0" max="1" step="0.01" value="1"/>
+                                <input id="green4" name="green" type="range" min="0" max="1" step="0.01" value="1" />
                             </div>
                             <div>
                                 Light blue &nbsp; &nbsp; &nbsp;
-                                <input id="blue" name="blue" type="range" min="0" max="1" step="0.01" value="1"/>
+                                <input id="blue4" name="blue" type="range" min="0" max="1" step="0.01" value="1" />
                             </div>
                         </div>
                     </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <h3>Part 5</h3>
+                    Use Phong shading by moving your implementation of the Phong reflection model to the fragment shader
+                    and varying positions and normals across triangles instead of colors. [Angel 6.5.3, 6.10]
+                    <br>
+                    Is Gouraud or Phong shading the best method for simulating highlight? Explain.
+                    <br>
+                    -------------------------------
+                    <br>
+                    <b>ANSWER</b><br>
+                    In Gouraud shading, the resulting lighting color is calculated per vertex,
+                    and the color values of the surrounding fragments are then the result of interpolating those vertex
+                    lighting colors.
+                    This results in the lighting being not very realistic unless large amounts of vertices are used.
+                    Phong shading,
+                    although more computationally expensive, results in smoother highlight. By interpolating positions
+                    and normals
+                    we can obtain more precise values to plug in our shading formulas.
+                </td>
+                <td>
+                    <canvas id="canvas5" width="512" height="512">Please use a browser supporting HTML5</canvas>
+                    <p>
+                        Subdivision level: &nbsp; &nbsp;
+                        <button id="increase_subdivision5" class="btn btn-success">Increase</button>
+                        <button id="decrease_subdivision5" class="btn btn-warning">Decrease</button>
+                        <div>
+                            <div>
+                                K_ambient &nbsp; &nbsp; &nbsp;
+                                <input id="ka5" name="ka" type="range" min="0" max="1" step="0.01" value="0.3" />
+                            </div>
+                            <div>
+                                K_diffuse &nbsp; &nbsp; &nbsp;
+                                <input id="kd5" name="kd" type="range" min="0" max="1" step="0.01" value="0.8" />
+                            </div>
+                            <div>
+                                K_specular &nbsp; &nbsp; &nbsp;
+                                <input id="ks5" name="ks" type="range" min="0" max="1" step="0.01" value="1" />
+                            </div>
+                            <div>
+                                Shininess &nbsp; &nbsp; &nbsp;
+                                <input id="alpha5" name="alpha" type="range" min="1" max="20" step="0.1" value="10" />
+                            </div>
+                            <div>
+                                Light red &nbsp; &nbsp; &nbsp;
+                                <input id="red5" name="red" type="range" min="0" max="1" step="0.01" value="1" />
+                            </div>
+                            <div>
+                                Light green &nbsp; &nbsp; &nbsp;
+                                <input id="green5" name="green" type="range" min="0" max="1" step="0.01" value="1" />
+                            </div>
+                            <div>
+                                Light blue &nbsp; &nbsp; &nbsp;
+                                <input id="blue5" name="blue" type="range" min="0" max="1" step="0.01" value="1" />
+                            </div>
+                        </div>
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <h3>Part 6</h3>
+                    Answer the following questions: [Angel 5.2, 6.2, 6.3, 6.5, 6.8]
+                    <ol>
+                        <li>
+                            What is the difference between Phong shading and Phong lighting (the
+                            Phong reflection model)?
+                        </li>
+                        <li>
+                            What is the difference between flat shading, Gouraud shading, and Phong
+                            shading? List pros and cons of each.
+                        </li>
+                        <li>
+                            What is the difference between a directional light and a point light?
+                        </li>
+                        <li>
+                            Does the eye position influence the shading of an object in any way?
+                        </li>
+                        <li>
+                            What is the effect of setting the specular term to (0, 0, 0)?
+                        </li>
+                        <li>
+                            What is the effect of increasing the shininess exponent (𝛼𝛼)?
+                        </li>
+                        <li>
+                            In what coordinate space did you compute the lighting?
+                        </li>
+                    </ol>
+                </td>
+                <td>
+                    <h3>ANSWERS</h3>
+                    <ol>
+                        <li>
+                            The term "Phong lighting" refers to a reflection model.
+                            It describes the way a surface reflects light, taking into consideration three major components -
+                            ambient, diffuse and specular. The diffuse component models rough surfaces and the specular component
+                            models shiny ones.
+
+                            The term "Phong shading" is an interpolation technique for surface shading.
+                            It interpolates surface normals across rasterized polygons, allowing us to compute pixel colors 
+                            based on the interpolated normals and a reflection model.
+                        </li><br>
+                        <li>
+                            In flat shading, every fragment belonging to the polygon gets the same color,
+                            since the basis for the calculation is just the angle between the polygon and the light source.
+                            The resulting shading is not smooth, and grid-like patterns can emerge if shaded
+                            surfaces are not very dense. This model allows for high computationally efficiency however, since there is no
+                            interpolation taking place.
+                            <br><br>
+                            Gouraud shading interpolates lighting values calculated for every vertex (as opposed to interpolating surface normals
+                            as in Phong shading). This results in a rather smooth shading (no sudden changes in color between polygons like in flat
+                            shading). However, lighting is not very realistic unless large amounts of vertices are used.
+                            It can be considered "middle ground" between flat and Phong shading, offering better quality then flat shading, while
+                            also being much cheaper to compute then Phong shading.
+                            <br><br>
+                            Phong shading offers the most realistic results of the three, but also comes with the highest computational
+                            overhead - since we interpolate surface normals, the lighting calculations take place in the fragment
+                            shader and thus, have to be done for each pixel.
+                        </li><br>
+                        <li>
+                            With a directional light, the light vector has the same value for every vertex, simplifying calculations.
+                        </li><br>
+                        <li>
+                            The eye position matters when simulating highlight - the specular element in the Phong reflection model
+                            takes into consideration camera's position, so it can simulate light being reflected into the eye of the camera.
+                        </li><br>
+                        <li>
+                            This disables the specular component, resulting in only ambient and diffuse lighting being applied.
+                        </li><br>
+                        <li>
+                            Increasing the exponent reduces the brightness of the specular term, while also reducing the radii of
+                            highlight points.
+                        </li><br>
+                        <li>
+                            I have calculated the lighting in camera space.
+                        </li>
+                    </ol>
                 </td>
             </tr>
         </tbody>
@@ -164,7 +303,6 @@
     <script type="text/javascript" src="../../common/webgl-utils.js"></script>
     <script type="text/javascript" src="../../common/initShaders.js"></script>
     <script type="text/javascript" src="../../common/MV.js"></script>
-    <script type="text/javascript" src="../../common/simple_camera.js"></script>
 
     <!-- PART 1 -->
     <script id="vertex-shader-1" type="x-shader/x-vertex">
@@ -249,7 +387,6 @@
         attribute vec3 position;
         
         uniform mat4 modelView;
-        uniform mat4 invModelView;
         uniform mat4 perspectiveMatrix;
 
         uniform float Ka;
@@ -287,8 +424,6 @@
             
             // final color
             vec3 baseColor = position * 0.5 + 0.5;
-            //vec3 baseColor = vec3(cos_alpha);
-            //vec3 baseColor = interpolate(vec3(0), vec3(1), max(0.0, dot(V, N)));
             fColor = baseColor * (ambient + diffuse + specular);
         }
     </script>
@@ -304,47 +439,63 @@
 
     <!-- PART 5 -->
     <script id="vertex-shader-5" type="x-shader/x-vertex">
-        attribute vec3 a_Position;
+        attribute vec3 position;
         
-        uniform mat4 u_WorldMatrix;
-        uniform mat4 u_ViewMatrix;
-        
-        varying vec3 v_Position;
-        varying vec3 v_Normal;
-        
+        uniform mat4 modelView;
+        uniform mat4 perspectiveMatrix;
+
+        // I only normalize positions as normals can be calculated from them
+        // since it's a unit sphere
+        varying vec4 fPosition;
+
         void main() {
-            vec4 worldPos = u_WorldMatrix * vec4(a_Position, 1);
+            fPosition = vec4(position, 1);
             
-            v_Normal = a_Position; // special case for a sphere
-            v_Position = vec3(worldPos);
-            
-            gl_Position = u_ViewMatrix * worldPos;
+            vec4 cameraPos = modelView * vec4(position, 1);
+            gl_Position = perspectiveMatrix * cameraPos;
         }
     </script>
     <script id="fragment-shader-5" type="x-shader/x-fragment">
-        precision mediump float;
+        precision highp float;
         
-        varying vec3 v_Position;
-        varying vec3 v_Normal;
+        varying vec4 fPosition;
+
+        uniform float Ka;
+        uniform float Kd;
+        uniform float Ks;
+        uniform float shininess;
+        uniform vec3 lightEmission;
+
+        uniform mat4 modelView;
         
-        // diffuse light
-        vec3 lightDirection = vec3(0, 0, -1);
+        // light
         vec3 lightColor = vec3(1, 1, 1);
         vec3 diffuse = vec3(1, 1, 1);
+        vec4 lightDirection = vec4(0, 0, -1, 0);
         
         void main() {
-            vec3 normal = normalize(v_Normal);
-            
-            // vPosition is the normal to the surface as it is a unit sphere
+            vec4 cameraPos = modelView * fPosition;
 
-            vec3 baseColor = v_Position;
+            vec4 N = normalize(modelView * vec4(fPosition.xyz, 0));
+            vec4 L = normalize(modelView * -lightDirection);
+            
+            // ambient term
+            vec3 ambient = Ka * lightEmission;
+            
+            // diffuse term
+            float cos_beta = max(0.0, dot(N, L));
+            vec3 diffuse = Kd * lightEmission * cos_beta;
 
-            vec3 lightPosition = -lightDirection;
-            float intensity = max(0.0, dot(v_Position, lightPosition));
+            // specular term
+            vec4 V = normalize(-cameraPos);
+            vec4 R = normalize(reflect(-L, N));
+
+            float cos_alpha = max(0.0, dot(V, R));
+            vec3 specular = Ks * lightEmission * pow(cos_alpha, shininess);
             
-            vec3 fColor = intensity * diffuse * lightColor * baseColor;
-            
-            gl_FragColor = vec4(fColor, 1);
+            // final color
+            vec3 baseColor = fPosition.xyz * 0.5 + 0.5;
+            gl_FragColor = vec4(baseColor * (ambient + diffuse + specular), 1);
         }
     </script>
     <script type="text/javascript" src="./script5.js"></script>
