@@ -8,10 +8,9 @@
     <meta name="author" content="Jakub Janaszkiewicz">
     <link rel="stylesheet" href="../../vendor/bootstrap/css/bootstrap.min.css">
     <style>
-        html,
-        body {
-            height: 100%;
+        html, body, canvas {
             width: 100%;
+            height: 100%;
         }
     </style>
 </head>
@@ -35,11 +34,11 @@
 
         varying vec3 fColor;
 
-        vec3 lightDirection = vec3(-1, -1, -1);
+        vec3 lightDirection = vec3(0, -1, -1);
         vec3 lightColor = vec3(1, 1, 0);
         
         vec3 lightAmbient = 0.7 * vec3(1, 1, 1);
-        vec3 lightDiffuse = 0.3 * vec3(1, 1, 1);
+        vec3 lightDiffuse = 0.5 * vec3(1, 1, 1);
         vec3 lightSpecular = 0.0 * vec3(1, 1, 1);
 
         vec3 materialAmbient = vec3(1, 1, 1);
@@ -55,12 +54,12 @@
             gl_Position = vView * worldCoords;
             gl_PointSize = 1.1;
             
-            vec3 baseColor = (1.0 - vNormal.y) * vGradient + vBias;
+            vec3 baseColor = vPosition.y * vGradient + vBias;
 
             vec3 ambient = ambientProduct * lightAmbient;
             
-            float dist = max(0.0, dot(vNormal, -lightDirection));
-            vec3 diffuse = dist * diffuseProduct;
+            float cos_beta = max(0.0, dot(vNormal, -lightDirection));
+            vec3 diffuse = cos_beta * diffuseProduct;
 
             fColor = (ambient + diffuse) * baseColor;
         }

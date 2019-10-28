@@ -32,8 +32,9 @@ function context() {
 
         let norm1 = normalize(cross(subtract(vb, va), subtract(vc, va)));
         let norm2 = normalize(cross(subtract(vc, va), subtract(vd, va)));
-
-        normals.push(norm1, norm1, norm1, norm2, norm2, norm2);
+        let normMid = normalize(mix(norm1, norm2, 0.5));
+        
+        normals.push(normMid, norm1, normMid, normMid, normMid, norm2);
     }
 
     for (let y = 0; y < pixelHeight - 1; y++) {
@@ -73,7 +74,10 @@ function context() {
         gl.clearColor(0.5, 0.9, 1, 1.0);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
+        camera.update();
+
         var worldMatrix = [
+            camera.view,
             scalem(100, 100, 100), // world size
             scalem(1, .5, 1), // noise height proportions
             translate(-.5, -1, -.5), // scale down only
@@ -85,13 +89,13 @@ function context() {
             gl.uniformMatrix4fv(uLocation, false, flatten(worldMatrix));
         } {
             let uLocation = gl.getUniformLocation(program, 'vView');
-            gl.uniformMatrix4fv(uLocation, false, flatten(camera.view)); // todo
+            gl.uniformMatrix4fv(uLocation, false, flatten(camera.perspective));
         } {
             let uLocation = gl.getUniformLocation(program, 'vGradient');
-            gl.uniform3fv(uLocation, flatten([0, 0, 0]));
+            gl.uniform3fv(uLocation, flatten([.4, .50, 0]));
         } {
             let uLocation = gl.getUniformLocation(program, 'vBias');
-            gl.uniform3fv(uLocation, flatten([.8, .52, .25]));
+            gl.uniform3fv(uLocation, flatten([.3, .15, .15]));
         }
 
         gl.drawArrays(gl.TRIANGLES, 0, vertices.length);
