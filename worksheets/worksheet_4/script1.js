@@ -9,7 +9,7 @@ function setupWebGL(canvas) {
 
 function context() {
     // Prepare WebGL
-    var canvas = document.getElementById("canvas1_1");
+    var canvas = document.getElementById("canvas1");
     var gl = setupWebGL(canvas);
 
     // Load shaders

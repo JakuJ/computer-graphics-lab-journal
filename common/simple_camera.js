@@ -40,19 +40,22 @@ class SimpleCamera {
         };
     }
 
+    get perspective() {
+        return perspective(45, this.ratio, 1, this.depth);
+    }
+
+    get view() {
+        return lookAt(this.position, add(this.position, this.forward), this.up);
+    }
+
     update() {
-        const forward = vec3([rotateY(this.yaw), rotateX(this.pitch), vec4(0, 0, 1, 0)].reduce(mult));
-        const right = vec3([rotateY(this.yaw), vec4(-1, 0, 0, 0)].reduce(mult));
-        const up = normalize(cross(right, forward));
+        this.forward = vec3([rotateY(this.yaw), rotateX(this.pitch), vec4(0, 0, 1, 0)].reduce(mult));
+        this.right = vec3([rotateY(this.yaw), vec4(-1, 0, 0, 0)].reduce(mult));
+        this.up = normalize(cross(this.right, this.forward));
 
         // update this position
-        this.position = add(this.position, scale((this.pressed['w'] - this.pressed['s']) * this.speed, forward));
-        this.position = add(this.position, scale((this.pressed['d'] - this.pressed['a']) * this.speed, right));
-        this.position = add(this.position, scale((this.pressed['shift'] - this.pressed['z']) * this.speed, up));
-        
-        return [
-            perspective(45, this.ratio, 1, this.depth), // perspective projection
-            lookAt(this.position, add(this.position, forward), up), // look-at matrix
-        ].reduce(mult);
+        this.position = add(this.position, scale((this.pressed['w'] - this.pressed['s']) * this.speed, this.forward));
+        this.position = add(this.position, scale((this.pressed['d'] - this.pressed['a']) * this.speed, this.right));
+        this.position = add(this.position, scale((this.pressed['shift'] - this.pressed['z']) * this.speed, this.up));
     }
 }

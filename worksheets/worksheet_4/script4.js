@@ -9,11 +9,11 @@ function setupWebGL(canvas) {
 
 function context() {
     // Prepare WebGL
-    var canvas = document.getElementById("canvas1_2");
+    var canvas = document.getElementById("canvas4");
     var gl = setupWebGL(canvas);
 
     // Load shaders
-    var program = initShaders(gl, "vertex-shader-2", "fragment-shader-2");
+    var program = initShaders(gl, "vertex-shader-4", "fragment-shader-4");
     gl.useProgram(program);
 
     // POSITIONS
@@ -22,7 +22,7 @@ function context() {
         vec3(-1, 1, -1),
         vec3(-1, -1, 1),
         vec3(1, 1, 1),
-    ].map(x => scale(1 / Math.sqrt(3), x));
+    ].map(x => normalize(x));
 
     var elems = [];
 
@@ -61,7 +61,7 @@ function context() {
         gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
         gl.bufferData(gl.ARRAY_BUFFER, flatten(elems), gl.STATIC_DRAW);
 
-        let vLocation = gl.getAttribLocation(program, 'vPosition');
+        let vLocation = gl.getAttribLocation(program, 'position');
         gl.vertexAttribPointer(vLocation, 3, gl.FLOAT, false, 0, 0);
         gl.enableVertexAttribArray(vLocation);
     }
@@ -79,8 +79,8 @@ function context() {
         redraw_sphere(subdivision);
     }
 
-    document.getElementById("increase_subdivision").onclick = increase_subdivision;
-    document.getElementById("decrease_subdivision").onclick = decrease_subdivision;
+    document.getElementById("increase_subdivision4").onclick = increase_subdivision;
+    document.getElementById("decrease_subdivision4").onclick = decrease_subdivision;
 
     function render(time) {
         // background
@@ -88,14 +88,45 @@ function context() {
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
         // view
-        var viewMatrix = [
-            perspective(45, 1, 1, 6),
-            rotateZ(time / 20),
-            lookAt(vec3(2, 2, 2), vec3(0, 0, 0), vec3(0, 1, 0)),
+        var modelViewMatrix = [
+            translate(0, 0, -3),
+            rotateY(time / 20),
         ].reduce(mult);
 
-        let uLocation = gl.getUniformLocation(program, 'vMatrix');
-        gl.uniformMatrix4fv(uLocation, false, flatten(viewMatrix));
+        var perspectiveMatrix = perspective(45, 1, 1, 6);
+
+        {
+            let uLocation = gl.getUniformLocation(program, 'modelView');
+            gl.uniformMatrix4fv(uLocation, false, flatten(modelViewMatrix));
+        } {
+            let uLocation = gl.getUniformLocation(program, 'invModelView');
+            gl.uniformMatrix4fv(uLocation, false, flatten(inverse(modelViewMatrix)));
+        } {
+            let uLocation = gl.getUniformLocation(program, 'perspectiveMatrix');
+            gl.uniformMatrix4fv(uLocation, false, flatten(perspectiveMatrix));
+        }
+
+        var uniforms = {
+            'Ka': document.getElementById("ka").value,
+            'Kd': document.getElementById("kd").value,
+            'Ks': document.getElementById("ks").value,
+            'shininess': document.getElementById("alpha").value,
+            'emission': vec3(
+                document.getElementById("red").value,
+                document.getElementById("green").value,
+                document.getElementById("blue").value
+            )
+        };
+
+        for (key in uniforms) {
+            let uLocation = gl.getUniformLocation(program, key);
+            gl.uniform1f(uLocation, uniforms[key]);
+        }
+
+        {
+            let uLocation = gl.getUniformLocation(program, 'lightEmission');
+            gl.uniform3fv(uLocation, uniforms['emission']);
+        }
 
         // points
         gl.drawArrays(gl.TRIANGLES, 0, elems.length);

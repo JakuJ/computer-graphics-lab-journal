@@ -40,39 +40,131 @@
                     </ul>
                 </td>
                 <td>
-                    <canvas id="canvas1_1" width="512" height="512">Please use a browser supporting HTML5</canvas>
+                    <canvas id="canvas1" width="512" height="512">Please use a browser supporting HTML5</canvas>
                 </td>
             </tr>
             <tr>
-                    <td>
-                        <h3>Part 1-2</h3>
-                        Draw a sphere in perspective view.
-                        <ul>
-                            <li>
-                                Draw a unit sphere instead of a unit cube using recursive subdivision of a tetrahedron.
-                                [Angel 6.6]
-                            </li>
-                            <li>
-                                Insert two buttons: one which increments the subdivision level and one which decrements
-                                the subdivision level. [Angel 3.6.2]
-                            </li>
-                        </ul>
-                    </td>
-                    <td>
-                        <canvas id="canvas1_2" width="512" height="512">Please use a browser supporting HTML5</canvas>
-                        <p>
-                            Subdivision level: &nbsp; &nbsp;
-                            <button id="increase_subdivision" class="btn btn-success">Increase</button>
-                            <button id="decrease_subdivision" class="btn btn-warning">Decrease</button>
-                        </p>
-                    </td>
-                </tr>
+                <td>
+                    <h3>Parts 1-2, 2</h3>
+                    Draw a sphere in perspective view.
+                    <ul>
+                        <li>
+                            Draw a unit sphere instead of a unit cube using recursive subdivision of a tetrahedron.
+                            [Angel 6.6]
+                        </li>
+                        <li>
+                            Insert two buttons: one which increments the subdivision level and one which decrements
+                            the subdivision level. [Angel 3.6.2]
+                        </li>
+                    </ul>
+                </td>
+                <td>
+                    <canvas id="canvas2" width="512" height="512">Please use a browser supporting HTML5</canvas>
+                    <p>
+                        Subdivision level: &nbsp; &nbsp;
+                        <button id="increase_subdivision2" class="btn btn-success">Increase</button>
+                        <button id="decrease_subdivision2" class="btn btn-warning">Decrease</button>
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <h3>Part 3</h3>
+                    Use Gouraud shading (with true normals) to draw a diffuse sphere lit by a distant, white,
+                    directional light with direction (0, 0, −1).
+                    <ul>
+                        <li>
+                            Obtain the surface normal in the vertex shader. [Angel 6.9]
+                        </li>
+                        <li>
+                            Think of the color of the sphere as its diffuse reflection coefficient k_d. Introduce a
+                            distant light with direction l_e = (0, 0, −1) and light emission L_d = L_e = (1, 1, 1), no
+                            distance attenuation. Compute the diffusely reflected light in the vertex shader and set the
+                            vertex color to this result (note that l = −l_e ). [Angel 6.3.2, 6.7.1]
+                        </li>
+                        <li>
+                            Let the camera orbit the sphere over time. [Angel 3.1]
+                        </li>
+                    </ul>
+                </td>
+                <td>
+                    <canvas id="canvas3" width="512" height="512">Please use a browser supporting HTML5</canvas>
+                    <p>
+                        Subdivision level: &nbsp; &nbsp;
+                        <button id="increase_subdivision3" class="btn btn-success">Increase</button>
+                        <button id="decrease_subdivision3" class="btn btn-warning">Decrease</button>
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <h3>Part 4</h3>
+                    <ul>
+                        <li>
+                            Implement the full Phong reflection model in the vertex shader and create sliders for
+                            material
+                            parameters (k_a, k_s, k_d, alpha) and light emission (L_e). [Angel 3.6.5, 6.3, 6.7-6.8]
+                        </li>
+                        <li>
+                            Please use just a single slider for each parameter and the same light emission for all
+                            lighting
+                            terms (L_a = L_d = L_s = L_e). This means that your solution can be significantly
+                            simpler than
+                            the example in the textbook.
+                        </li>
+                        <li>
+                            [Section 6.8 of the textbook has many minor glitches. Please consult the Wiki page with
+                            textbook
+                            clarifications before using the code example in Section 6.8.]
+                        </li>
+                    </ul>
+                </td>
+                <td>
+                    <canvas id="canvas4" width="512" height="512">Please use a browser supporting HTML5</canvas>
+                    <p>
+                        Subdivision level: &nbsp; &nbsp;
+                        <button id="increase_subdivision4" class="btn btn-success">Increase</button>
+                        <button id="decrease_subdivision4" class="btn btn-warning">Decrease</button>
+                        <div>
+                            <div>
+                                K_ambient &nbsp; &nbsp; &nbsp;
+                                <input id="ka" name="ka" type="range" min="0" max="1" step="0.01" value="0.3"/>
+                            </div>
+                            <div>
+                                K_diffuse &nbsp; &nbsp; &nbsp;
+                                <input id="kd" name="kd" type="range" min="0" max="1" step="0.01" value="0.8"/>
+                            </div>
+                            <div>
+                                K_specular &nbsp; &nbsp; &nbsp;
+                                <input id="ks" name="ks" type="range" min="0" max="1" step="0.01" value="1"/>
+                            </div>
+                            <div>
+                                Shininess &nbsp; &nbsp; &nbsp;
+                                <input id="alpha" name="alpha" type="range" min="1" max="20" step="0.1" value="10"/>
+                            </div>
+                            <div>
+                                Light red &nbsp; &nbsp; &nbsp;
+                                <input id="red" name="red" type="range" min="0" max="1" step="0.01" value="1"/>
+                            </div>
+                            <div>
+                                Light green &nbsp; &nbsp; &nbsp;
+                                <input id="green" name="green" type="range" min="0" max="1" step="0.01" value="1"/>
+                            </div>
+                            <div>
+                                Light blue &nbsp; &nbsp; &nbsp;
+                                <input id="blue" name="blue" type="range" min="0" max="1" step="0.01" value="1"/>
+                            </div>
+                        </div>
+                    </p>
+                </td>
+            </tr>
         </tbody>
     </table>
 
     <script type="text/javascript" src="../../common/webgl-utils.js"></script>
     <script type="text/javascript" src="../../common/initShaders.js"></script>
     <script type="text/javascript" src="../../common/MV.js"></script>
+    <script type="text/javascript" src="../../common/simple_camera.js"></script>
 
     <!-- PART 1 -->
     <script id="vertex-shader-1" type="x-shader/x-vertex">
@@ -94,7 +186,7 @@
             gl_FragColor = vec4(fColor, 1);
         }
     </script>
-    <script type="text/javascript" src="./script1_1.js"></script>
+    <script type="text/javascript" src="./script1.js"></script>
 
     <!-- PART 2 -->
     <script id="vertex-shader-2" type="x-shader/x-vertex">
@@ -104,7 +196,7 @@
         
         void main() {
             gl_Position = vMatrix * vec4(vPosition, 1);
-            fColor = 0.5 * vPosition + 0.5;
+            fColor = sqrt(3.0) * 0.5 * vPosition + 0.5;
         }
     </script>
     <script id="fragment-shader-2" type="x-shader/x-fragment">
@@ -115,8 +207,147 @@
             gl_FragColor = vec4(fColor, 1);
         }
     </script>
-    <script type="text/javascript" src="../../common/simple_camera.js"></script>
-    <script type="text/javascript" src="./script1_2.js"></script>
+    <script type="text/javascript" src="./script2.js"></script>
+
+    <!-- PART 3 -->
+    <script id="vertex-shader-3" type="x-shader/x-vertex">
+        attribute vec3 vPosition;
+        uniform mat4 vMatrix;
+        varying vec3 fColor;
+
+        // diffuse light
+        vec3 lightDirection = vec3(0, 0, -1);
+        vec3 lightColor = vec3(1, 1, 1);
+        vec3 diffuse = vec3(1, 1, 1);
+        
+        void main() {
+            gl_Position = vMatrix * vec4(vPosition, 1);
+            gl_PointSize = 2.0;
+
+            vec3 baseColor = vPosition * sqrt(3.0) * 0.5 + 0.5;
+            //vec3 baseColor = vec3(0, 0, 1);
+            
+            // vPosition is the normal to the surface as it is a unit sphere
+            vec3 lightPosition = -lightDirection;
+            float intensity = max(0.0, dot(vPosition, lightPosition));
+            
+            fColor = intensity * diffuse * lightColor * baseColor;
+        }
+    </script>
+    <script id="fragment-shader-3" type="x-shader/x-fragment">
+        precision mediump float;
+        varying vec3 fColor;
+        
+        void main() {
+            gl_FragColor = vec4(fColor, 1);
+        }
+    </script>
+    <script type="text/javascript" src="./script3.js"></script>
+
+    <!-- PART 4 -->
+    <script id="vertex-shader-4" type="x-shader/x-vertex">
+        attribute vec3 position;
+        
+        uniform mat4 modelView;
+        uniform mat4 invModelView;
+        uniform mat4 perspectiveMatrix;
+
+        uniform float Ka;
+        uniform float Kd;
+        uniform float Ks;
+        uniform float shininess;
+        uniform vec3 lightEmission;
+        
+        varying vec3 fColor;
+
+        // diffuse light
+        vec4 lightDirection = vec4(0, 0, -1, 0);
+        
+        void main() {
+            vec4 cameraPos = modelView * vec4(position, 1);
+
+            gl_Position = perspectiveMatrix * cameraPos;
+
+            vec4 N = normalize(modelView * vec4(position, 0));
+            vec4 L = normalize(modelView * -lightDirection);
+            
+            // ambient term
+            vec3 ambient = Ka * lightEmission;
+            
+            // diffuse term
+            float cos_beta = max(0.0, dot(N, L));
+            vec3 diffuse = Kd * lightEmission * cos_beta;
+
+            // specular term
+            vec4 V = normalize(-cameraPos);
+            vec4 R = normalize(reflect(-L, N));
+
+            float cos_alpha = max(0.0, dot(V, R));
+            vec3 specular = Ks * lightEmission * pow(cos_alpha, shininess);
+            
+            // final color
+            vec3 baseColor = position * 0.5 + 0.5;
+            //vec3 baseColor = vec3(cos_alpha);
+            //vec3 baseColor = interpolate(vec3(0), vec3(1), max(0.0, dot(V, N)));
+            fColor = baseColor * (ambient + diffuse + specular);
+        }
+    </script>
+    <script id="fragment-shader-4" type="x-shader/x-fragment">
+        precision mediump float;
+        varying vec3 fColor;
+        
+        void main() {
+            gl_FragColor = vec4(fColor, 1);
+        }
+    </script>
+    <script type="text/javascript" src="./script4.js"></script>
+
+    <!-- PART 5 -->
+    <script id="vertex-shader-5" type="x-shader/x-vertex">
+        attribute vec3 a_Position;
+        
+        uniform mat4 u_WorldMatrix;
+        uniform mat4 u_ViewMatrix;
+        
+        varying vec3 v_Position;
+        varying vec3 v_Normal;
+        
+        void main() {
+            vec4 worldPos = u_WorldMatrix * vec4(a_Position, 1);
+            
+            v_Normal = a_Position; // special case for a sphere
+            v_Position = vec3(worldPos);
+            
+            gl_Position = u_ViewMatrix * worldPos;
+        }
+    </script>
+    <script id="fragment-shader-5" type="x-shader/x-fragment">
+        precision mediump float;
+        
+        varying vec3 v_Position;
+        varying vec3 v_Normal;
+        
+        // diffuse light
+        vec3 lightDirection = vec3(0, 0, -1);
+        vec3 lightColor = vec3(1, 1, 1);
+        vec3 diffuse = vec3(1, 1, 1);
+        
+        void main() {
+            vec3 normal = normalize(v_Normal);
+            
+            // vPosition is the normal to the surface as it is a unit sphere
+
+            vec3 baseColor = v_Position;
+
+            vec3 lightPosition = -lightDirection;
+            float intensity = max(0.0, dot(v_Position, lightPosition));
+            
+            vec3 fColor = intensity * diffuse * lightColor * baseColor;
+            
+            gl_FragColor = vec4(fColor, 1);
+        }
+    </script>
+    <script type="text/javascript" src="./script5.js"></script>
 </body>
 
 </html>
