@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Worksheet 4</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="Jakub Janaszkiewicz">
+    <link rel="stylesheet" href="../../vendor/bootstrap/css/bootstrap.min.css">
+    <style>
+        table {
+            table-layout: auto;
+        }
+
+        th {
+            text-align: center;
+            font-size: 150%;
+        }
+    </style>
+</head>
+
+<body>
+    <table class="table">
+        <thead>
+            <th>Exercise</th>
+            <th>Solution</th>
+            <th></th>
+        </thead>
+        <tbody>
+            <tr>
+                <td>
+                    <h3>Part 3</h3>
+                    The next step is to load the OBJ file. (...)
+                    <br><br>
+                    Set up the camera and draw your 3D object as an indexed
+                    face set using a simple set of shaders.
+                </td>
+                <td>
+                    <canvas id="canvas3" width="512" height="512">Please use a browser supporting HTML5</canvas>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <h3>Part 4</h3>
+                    Set up a light source and use your shaders from Part 5 of Worksheet 4 to shade the object using
+                    Phong shading and the Phong illumination model.
+                    <br><br>
+                    Explain how you obtain and use surface normals, and explain how this relates to the surface
+                    smoothness when you are rendering a triangle mesh.
+                    <br><br>
+                    -------------------
+                    <br><b>Answer</b><br>
+                    I obtain surface normals from the OBJ file. The normals (for each vertex) are passed to the vertex shader, which in turn
+                    passes them to the fragment shader as <i>varying</i> variables. This is the basis of Phong shading - the normals
+                    get interpolated across the polygon faces, resulting in smooth lighting.
+                </td>
+                <td>
+                    <canvas id="canvas4" width="512" height="512">Please use a browser supporting HTML5</canvas>
+                    <div>
+                        <div>
+                            K_ambient &nbsp; &nbsp; &nbsp;
+                            <input id="ka4" name="ka" type="range" min="0" max="1" step="0.01" value="0.2" />
+                        </div>
+                        <div>
+                            K_diffuse &nbsp; &nbsp; &nbsp;
+                            <input id="kd4" name="kd" type="range" min="0" max="1" step="0.01" value="0.8" />
+                        </div>
+                        <div>
+                            K_specular &nbsp; &nbsp; &nbsp;
+                            <input id="ks4" name="ks" type="range" min="0" max="1" step="0.01" value="1" />
+                        </div>
+                        <div>
+                            Shininess &nbsp; &nbsp; &nbsp;
+                            <input id="alpha4" name="alpha" type="range" min="1" max="20" step="0.1" value="5" />
+                        </div>
+                        <div>
+                            Light red &nbsp; &nbsp; &nbsp;
+                            <input id="red4" name="red" type="range" min="0" max="1" step="0.01" value="1" />
+                        </div>
+                        <div>
+                            Light green &nbsp; &nbsp; &nbsp;
+                            <input id="green4" name="green" type="range" min="0" max="1" step="0.01" value="0.5" />
+                        </div>
+                        <div>
+                            Light blue &nbsp; &nbsp; &nbsp;
+                            <input id="blue4" name="blue" type="range" min="0" max="1" step="0.01" value="0.2" />
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <script type="text/javascript" src="../../common/webgl-utils.js"></script>
+    <script type="text/javascript" src="../../common/initShaders.js"></script>
+    <script type="text/javascript" src="../../common/MV.js"></script>
+    <script type="text/javascript" src="../../common/OBJParser.js"></script>
+
+    <!-- PART 3 -->
+    <script id="vertex-shader-3" type="x-shader/x-vertex">
+        attribute vec3 a_Position;
+        attribute vec3 a_Normal;
+        attribute vec4 a_Color;
+        
+        uniform mat4 modelView;
+        uniform mat4 perspectiveMatrix;
+
+        varying vec4 fColor;
+
+        void main() {
+            fColor = a_Color;
+            
+            vec4 cameraPos = modelView * vec4(a_Position, 1);
+            gl_Position = perspectiveMatrix * cameraPos;
+        }
+    </script>
+    <script id="fragment-shader-3" type="x-shader/x-fragment">
+        precision highp float;
+        
+        varying vec4 fColor;
+
+        void main() {
+            gl_FragColor = fColor;
+        }
+    </script>
+    <script type="text/javascript" src="./script3.js"></script>
+    
+    <!-- PART 4 -->
+    <script id="vertex-shader-4" type="x-shader/x-vertex">
+        attribute vec3 a_Position;
+        attribute vec3 a_Normal;
+        attribute vec4 a_Color;
+        
+        uniform mat4 modelView;
+        uniform mat4 perspectiveMatrix;
+
+        varying vec4 fPosition;
+        varying vec4 fNormal;
+        varying vec4 fColor;
+
+        void main() {
+            fPosition = vec4(a_Position, 1);
+            fNormal = vec4(a_Normal, 0);
+            fColor = a_Color;
+            
+            vec4 cameraPos = modelView * fPosition;
+            gl_Position = perspectiveMatrix * cameraPos;
+        }
+    </script>
+    <script id="fragment-shader-4" type="x-shader/x-fragment">
+        precision highp float;
+        
+        varying vec4 fPosition;
+        varying vec4 fNormal;
+        varying vec4 fColor;
+
+        uniform float Ka;
+        uniform float Kd;
+        uniform float Ks;
+        uniform float shininess;
+        uniform vec3 lightEmission;
+
+        uniform mat4 modelView;
+        
+        // light
+        vec4 lightDirection = vec4(0, 0, -1, 0);
+        
+        void main() {
+            vec4 cameraPos = modelView * fPosition;
+
+            vec4 N = normalize(modelView * fNormal);
+            vec4 L = normalize(modelView * -lightDirection);
+            
+            // ambient term
+            vec3 ambient = Ka * lightEmission;
+            
+            // diffuse term
+            float cos_beta = max(0.0, dot(N, L));
+            vec3 diffuse = Kd * lightEmission * cos_beta;
+
+            // specular term
+            vec4 V = normalize(-cameraPos);
+            vec4 R = normalize(reflect(-L, N));
+
+            float cos_alpha = max(0.0, dot(V, R));
+            vec3 specular = Ks * lightEmission * pow(cos_alpha, shininess);
+            
+            // final color
+            gl_FragColor = vec4(fColor.xyz * (ambient + diffuse + specular), 1);
+        }
+    </script>
+    <script type="text/javascript" src="./script4.js"></script>
+</body>
+
+</html>
