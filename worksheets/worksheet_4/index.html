@@ -412,15 +412,19 @@
             vec3 ambient = Ka * lightEmission;
             
             // diffuse term
-            float cos_beta = max(0.0, dot(N, L));
-            vec3 diffuse = Kd * lightEmission * cos_beta;
+            float lambertian = max(0.0, dot(N, L));
+            vec3 diffuse = Kd * lightEmission * lambertian;
 
             // specular term
             vec4 V = normalize(-cameraPos);
             vec4 R = normalize(reflect(-L, N));
 
-            float cos_alpha = max(0.0, dot(V, R));
-            vec3 specular = Ks * lightEmission * pow(cos_alpha, shininess);
+            vec3 specular = vec3(0);
+            if (lambertian > 0.0)
+            {
+                float cos_alpha = max(0.0, dot(V, R));
+                specular = Ks * lightEmission * pow(cos_alpha, shininess);
+            }
             
             // final color
             vec3 baseColor = position * 0.5 + 0.5;
@@ -468,14 +472,13 @@
 
         uniform mat4 modelView;
         
-        // light
-        vec3 lightColor = vec3(1, 1, 1);
-        vec3 diffuse = vec3(1, 1, 1);
         vec4 lightDirection = vec4(0, 0, -1, 0);
         
         void main() {
             vec4 cameraPos = modelView * fPosition;
 
+            // normally we interpolate position, normals and light position
+            // here, we can simplify, because it's a unit sphere and the light is distant
             vec4 N = normalize(modelView * vec4(fPosition.xyz, 0));
             vec4 L = normalize(modelView * -lightDirection);
             
@@ -483,16 +486,20 @@
             vec3 ambient = Ka * lightEmission;
             
             // diffuse term
-            float cos_beta = max(0.0, dot(N, L));
-            vec3 diffuse = Kd * lightEmission * cos_beta;
+            float lambertian = max(0.0, dot(N, L));
+            vec3 diffuse = Kd * lightEmission * lambertian;
 
             // specular term
             vec4 V = normalize(-cameraPos);
             vec4 R = normalize(reflect(-L, N));
 
-            float cos_alpha = max(0.0, dot(V, R));
-            vec3 specular = Ks * lightEmission * pow(cos_alpha, shininess);
-            
+            vec3 specular = vec3(0);
+            if (lambertian > 0.0)
+            {
+                float cos_alpha = max(0.0, dot(V, R));
+                specular = Ks * lightEmission * pow(cos_alpha, shininess);
+            }
+
             // final color
             vec3 baseColor = fPosition.xyz * 0.5 + 0.5;
             gl_FragColor = vec4(baseColor * (ambient + diffuse + specular), 1);
