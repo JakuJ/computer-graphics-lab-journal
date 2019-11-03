@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Worksheet 5</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="Jakub Janaszkiewicz">
+    <link rel="stylesheet" href="../../vendor/bootstrap/css/bootstrap.min.css">
+    <style>
+        table {
+            table-layout: auto;
+        }
+
+        th {
+            text-align: center;
+            font-size: 150%;
+        }
+    </style>
+</head>
+
+<body>
+    <table class="table">
+        <thead>
+            <th>Exercise</th>
+            <th>Solution</th>
+            <th></th>
+        </thead>
+        <tbody>
+            <tr>
+                <td>
+                    <h3>Part 1 + 2</h3>
+                    Create a rectangle with vertices (-4, -1, -1), (4, -1, -1), (4, -1, -21), (−4, −1, −21). Set up a
+                    perspective camera with a 90° field of view. Use the default view matrix and
+                    draw the rectangle in white on a blue background. Map a procedurally generated checkerboard texture
+                    to the rectangle using the following steps:
+                    <br><br>
+                    <ul>
+                        <li>
+                            Create a texture object and bind it as the current 2D texture object. [Angel 7.5.1]
+                        </li>
+                        <li>
+                            Generate a 64 × 64 resolution texture image that forms an 8 × 8 black-and-white
+                            checkerboard, and set it to be used with the currently bound 2D texture. [Angel 7.5.2]
+                        </li>
+                        <li>
+                            Create texture coordinates (−1.5, 0.0), (2.5, 0.0), (2.5, 10.0), (−1.5, 10.0) for your
+                            rectangle, such that the texture repeats four times along the width and ten times along the
+                            length of the rectangle. Set up the texture coordinates to be received as an attribute in
+                            the vertex shader. [Angel 7.5.3]
+                        </li>
+                        <li>
+                            Set up the texture map as a uniform sampler2D in the fragment shader and link this sampler
+                            to the default texture (0). Pass the texture coordinates to the fragment shader and use them
+                            to replace the fragment color with a color from the texture map. [Angel 7.5.3]
+                        </li>
+                        <li>
+                            Set the texture filtering parameters to use nearest point sampling. This ensures texture
+                            completeness. You should now be able to draw the texture mapped rectangle. [Angel 7.5.4]
+                        </li>
+                    </ul>
+
+                    Create buttons and/or selection menus that enable you to switch between different texture wrapping
+                    modes (repeat or clamp-to-edge) and different texture filtering modes (nearest, linear, mipmap).
+                    [Angel 3.6, 7.5.3, 7.5.4]
+                    <br><br>
+                    Explain the effect of the different filtering modes and their influence on texture magnification and
+                    minification issues.
+                    <br><br>
+                    -----------
+                    <br><br>
+                    <b>ANSWER</b>
+                    <br><br>
+                    TODO
+                </td>
+                <td>
+                    <canvas id="canvas1" width="512" height="512">Please use a browser supporting HTML5</canvas>
+                    <p>
+                        <label for="wrapping">Wrapping mode</label>&nbsp;
+                        <select id="wrapping">
+                            <option value="repeat">Repeat</option>
+                            <option value="reflect">Reflect</option>
+                            <option value="clamp-to-edge">Clamp to edge</option>
+                        </select>
+                    </p>
+                    <p>
+                        <label for="filtering">Filtering mode</label>&nbsp;
+                        <select id="filtering">
+                            <option value="nearest">Nearest</option>
+                            <option value="linear">Linear</option>
+                            <option value="mipmap">Mipmap</option>
+                        </select>
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <h3>Part 3</h3>
+                    Start from a diffuse sphere illuminated by a directional light (Part 3 of Worksheet 4). We will now
+                    map an earth texture onto the sphere. To do this, we load the texture from an image file and
+                    calculate the texture coordinates in the fragment shader. Some steps to follow:
+                    <br><br>
+                    <ul>
+                        <li>
+                            When initializing the texture, load the texture image from the file earth.jpg (available on
+                            CampusNet). [Angel 7.5.2]
+                        </li>
+                        <li>
+                            The next step is to pass the normal of the sphere to the fragment shader and use it to
+                            calculate the texture coordinates. The normals define points on the unit sphere. The unit
+                            sphere is then an intermediate surface to which we can map texture coordinates. Use
+                            spherical coordinates to define the relation between a surface normal (a point on the unit
+                            sphere) and the texture coordinates (u and v). [Angel 7.4]
+                        </li>
+                        <li>
+                            Invert the relation you found using inverse trigonometric functions. Use the resulting
+                            formula in the fragment shader to calculate texture coordinates from the surface normal. An
+                            atan2 function is needed to get the signs right. In GLSL, the atan2 function is simply to
+                            use atan(y, x) instead of atan(y/x).
+                        </li>
+                        <li>
+                            Use the color found by texture look-up as k_a and k_d of the sphere and
+                            illuminate the sphere by a directional source and an ambient source.
+                            [Angel 6.3.1, 6.3.2, 7.5.3]
+                        </li>
+                        <li>
+                            Spin the globe. The earth texture has high resolution leading to
+                            minification issues, especially in the mountain ranges during a spin. Choose a filtering
+                            option that betters these minification issues without too much blurring of the texture.
+                            Explain your choice. [Angel 7.5.4]
+                        </li>
+                    </ul>
+                    -----------
+                    <br><br>
+                    <b>ANSWER</b>
+                    <br><br>
+                    TODO
+                </td>
+                <td>
+                    <canvas id="canvas3" width="512" height="512">Please use a browser supporting HTML5</canvas>
+                    <p>
+                        Subdivision level: &nbsp; &nbsp;
+                        <button id="increase_subdivision3" class="btn btn-success">Increase</button>
+                        <button id="decrease_subdivision3" class="btn btn-warning">Decrease</button>
+                    </p>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <script type="text/javascript" src="../../common/webgl-utils.js"></script>
+    <script type="text/javascript" src="../../common/initShaders.js"></script>
+    <script type="text/javascript" src="../../common/MV.js"></script>
+    <script type="text/javascript" src="../../common/OBJParser.js"></script>
+    <script type="text/javascript" src="../../common/simple_camera.js"></script>
+
+    <!-- PART 1 + 2 -->
+    <script id="vertex-shader-1" type="x-shader/x-vertex">
+        attribute vec3 a_Position;
+        attribute vec3 a_Color;
+        attribute vec2 a_TexPosition;
+        
+        uniform mat4 modelView;
+        uniform mat4 perspectiveMatrix;
+
+        varying vec3 fColor;
+        varying vec2 fTexCoord;
+
+        void main() {
+            fColor = a_Color;
+            fTexCoord = a_TexPosition;
+            
+            gl_Position = perspectiveMatrix * modelView * vec4(a_Position, 1);
+        }
+    </script>
+    <script id="fragment-shader-1" type="x-shader/x-fragment">
+        precision mediump float;
+        
+        varying vec3 fColor;
+        varying vec2 fTexCoord;
+        uniform sampler2D texMap;
+
+        void main() {
+            gl_FragColor = vec4(fColor, 1) * texture2D(texMap, fTexCoord);
+        }
+    </script>
+    <script type="text/javascript" src="./script1.js"></script>
+
+    <!-- PART 3 -->
+    <script id="vertex-shader-3" type="x-shader/x-vertex">
+        attribute vec3 vPosition;
+        
+        uniform mat4 worldMatrix;
+        uniform mat4 viewMatrix;
+
+        varying vec4 fNormal;
+        varying float fLight;
+
+        // white, distant, diffuse light
+        vec3 lightDirection = vec3(3, -1, -1);
+        
+        void main() {
+            // normal is the position, since it's a unit sphere
+            fNormal = vec4(vPosition, 1);
+            
+            vec4 worldCoord = worldMatrix * fNormal;
+            gl_Position = viewMatrix * worldCoord;
+            gl_PointSize = 2.0;
+            
+            vec3 lightPosition = normalize(-lightDirection);
+            fLight = 0.3 + max(0.0, dot(worldCoord.xyz, lightPosition));
+        }
+    </script>
+    <script id="fragment-shader-3" type="x-shader/x-fragment">
+        #define M_PI 3.1415926535897932384626433832795
+        precision mediump float;
+        
+        varying float fLight;
+        varying vec4 fNormal;
+
+        uniform sampler2D texMap;
+        
+        void main() {
+            float phi = atan(fNormal.x, fNormal.z) / (2.0 * M_PI) + 0.5;
+            float theta = fNormal.y * 0.5 + 0.5;
+            vec2 texCoord = vec2(phi, theta);
+            gl_FragColor = vec4(fLight * texture2D(texMap, texCoord).xyz, 1);
+        }
+    </script>
+    <script type="text/javascript" src="./script3.js"></script>
+</body>
+
+</html>

@@ -99,7 +99,7 @@
     <!-- PART 3 -->
     <script id="vertex-shader-3" type="x-shader/x-vertex">
         attribute vec3 a_Position;
-        attribute vec3 a_Normal;
+        attribute vec3 a_Normal; // unused
         attribute vec4 a_Color;
         
         uniform mat4 modelView;
@@ -175,16 +175,19 @@
             vec3 ambient = Ka * lightEmission;
             
             // diffuse term
-            float cos_beta = max(0.0, dot(N, L));
-            vec3 diffuse = Kd * lightEmission * cos_beta;
+            float lambertian = max(0.0, dot(N, L));
+            vec3 diffuse = Kd * lightEmission * lambertian;
 
             // specular term
             vec4 V = normalize(-cameraPos);
             vec4 R = normalize(reflect(-L, N));
 
-            float cos_alpha = max(0.0, dot(V, R));
-            vec3 specular = Ks * lightEmission * pow(cos_alpha, shininess);
-            
+            vec3 specular = vec3(0);
+            if (lambertian > 0.0) {
+                float cos_alpha = max(0.0, dot(V, R));
+                specular = Ks * lightEmission * pow(cos_alpha, shininess);
+            }
+
             // final color
             gl_FragColor = vec4(fColor.xyz * (ambient + diffuse + specular), 1);
         }
