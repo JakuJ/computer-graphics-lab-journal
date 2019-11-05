@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Worksheet 7</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="Jakub Janaszkiewicz">
+    <link rel="stylesheet" href="../../vendor/bootstrap/css/bootstrap.min.css">
+    <style>
+        table {
+            table-layout: auto;
+        }
+
+        th {
+            text-align: center;
+            font-size: 150%;
+        }
+    </style>
+</head>
+
+<body>
+    <table class="table">
+        <thead>
+            <th>Exercise</th>
+            <th>Solution</th>
+            <th></th>
+        </thead>
+        <tbody>
+            <tr>
+                <td>
+                    <h3>Part 1</h3>
+                    Start from a textured sphere (Part 3 of Worksheet 6). Instead of the ordinary 2D texture, we will
+                    now use a cube map to texture the sphere. [Angel 7.8]
+                    <br><br>
+                    Modify your texture initialization such that it loads a cube map from six image files, one file for
+                    each face.
+                    <br><br>
+                    Once the cube map is initialized, no inverse map is needed to compute texture coordinates. Simply
+                    use the world space normal as texture coordinates when looking up the texture color in the fragment
+                    shader.
+                </td>
+                <td>
+                    <canvas id="canvas1" width="512" height="512">Please use a browser supporting HTML5</canvas>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <h3>Part 2</h3>
+                    The next step is to also draw the environment in the background. To do this, we draw a
+                    screen-filling quad very close to the far plane of the view frustum and texture it using the cube
+                    map.
+                    <br><br>
+                    <ul>
+                        <li>
+                            A screen-filling quad close to the far plane is most easily drawn using
+                            clip coordinates, where the diagonal goes from (−1, −1, 0.999, 1) to
+                            to (1, 1, 0.999, 1). Insert this background quad into your scene.
+                        </li>
+                        <li>
+                            Draw the background quad using the same shaders as in Part 1, but
+                            introduce a uniform matrix M_tex in the vertex shader that transforms
+                            the vertex position to texture coordinates.
+                        </li>
+                        <li>
+                            For the sphere, M_tex is an identity matrix. The vertices of the
+                            background quad are however in clip space, so its model-view-projection matrix
+                            is an identity matrix, but its M_tex should transform
+                            from clip space positions to world space directions. Create M_tex for
+                            the background quad using (a) the inverse of the projection matrix to
+                            go from clip coordinates to camera coordinates and (b) the inverse of the rotational part of
+                            the view matrix (no translation) to get direction vectors in world coordinates. Explain the
+                            transformation.
+                        </li>
+                    </ul>
+                    -------------<br>
+                    <b>ANSWER</b>
+                    <br> TODO
+                </td>
+                <td>
+                    <canvas id="canvas2" width="512" height="512">Please use a browser supporting HTML5</canvas>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <h3>Part 3</h3>
+                    The sphere is not really like a mirror ball. Instead of looking up the environment in the normal
+                    direction, we should look up the environment in the direction of reflection. [Angel 7.7]
+                    <br><br>
+                    <ul>
+                        <li>
+                            Create a uniform variable (reflective) to distinguish reflective objects (the mirror ball)
+                            from other objects (the background quad).
+                        </li>
+                        <li>
+                            Upload the eye position to the fragment shader as a uniform variable
+                            and compute the direction of incidence (the view vector, v) in world coordinates.
+                        </li>
+                        <li>
+                            Use a conditional operator (or an if-statement) to choose the direction of reflection as
+                            texture coordinates for reflective objects.
+                        </li>
+                    </ul>
+                </td>
+                <td>
+                    <canvas id="canvas3" width="512" height="512">Please use a browser supporting HTML5</canvas>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <script type="text/javascript" src="../../common/webgl-utils.js"></script>
+    <script type="text/javascript" src="../../common/initShaders.js"></script>
+    <script type="text/javascript" src="../../common/MV.js"></script>
+    <script type="text/javascript" src="../../common/OBJParser.js"></script>
+
+    <!-- PART 1 -->
+    <script id="vertex-shader-1" type="x-shader/x-vertex">
+        attribute vec3 vPosition;
+        
+        uniform mat4 worldMatrix;
+        uniform mat4 viewMatrix;
+
+        varying vec4 fNormal;
+        
+        void main() {
+            // normal is the position, since it's a unit sphere
+            fNormal = vec4(vPosition, 1);
+            
+            vec4 worldCoord = worldMatrix * fNormal;
+            gl_Position = viewMatrix * worldCoord;
+            gl_PointSize = 2.0;
+        }
+    </script>
+    <script id="fragment-shader-1" type="x-shader/x-fragment">
+        #define M_PI 3.1415926535897932384626433832795
+        precision mediump float;
+        
+        varying vec4 fNormal;
+
+        uniform samplerCube texMap;
+        
+        void main() {
+            gl_FragColor = textureCube(texMap, normalize(fNormal.xyz));
+        }
+    </script>
+    <script type="text/javascript" src="./script1.js"></script>
+
+    <!-- PART 2 -->
+    <script id="vertex-shader-2" type="x-shader/x-vertex">
+        attribute vec3 vPosition;
+        
+        uniform mat4 worldMatrix;
+        uniform mat4 viewMatrix;
+        uniform mat4 texMatrix;
+
+        varying vec4 fNormal;
+        
+        void main() {
+            // normal is the position, since it's a unit sphere
+            fNormal = texMatrix * vec4(vPosition, 1);
+            
+            vec4 worldCoord = worldMatrix * fNormal;
+            gl_Position = viewMatrix * worldCoord;
+            gl_PointSize = 2.0;
+        }
+    </script>
+    <script id="fragment-shader-2" type="x-shader/x-fragment">
+        #define M_PI 3.1415926535897932384626433832795
+        precision mediump float;
+        
+        varying vec4 fNormal;
+
+        uniform samplerCube texMap;
+        
+        void main() {
+            gl_FragColor = textureCube(texMap, normalize(fNormal.xyz));
+        }
+    </script>
+    <script type="text/javascript" src="./script2.js"></script>
+
+    <!-- PART 3 -->
+    <script id="vertex-shader-3" type="x-shader/x-vertex">
+        attribute vec3 vPosition;
+        
+        uniform mat4 worldMatrix;
+        uniform mat4 viewMatrix;
+        uniform mat4 texMatrix;
+
+        varying vec4 fPosition;
+        
+        void main() {
+            // normal is the position, since it's a unit sphere
+            fPosition = texMatrix * vec4(vPosition, 1);
+            
+            gl_Position = viewMatrix * worldMatrix * fPosition;
+            gl_PointSize = 2.0;
+        }
+    </script>
+    <script id="fragment-shader-3" type="x-shader/x-fragment">
+        #define M_PI 3.1415926535897932384626433832795
+        precision mediump float;
+        
+        varying vec4 fPosition;
+
+        uniform vec4 eyePos;
+        uniform bool reflective;
+        uniform samplerCube texMap;
+        
+        void main() {
+            vec3 texCoords = normalize(fPosition.xyz);
+
+            if (reflective) {
+                vec4 v = fPosition - eyePos;
+                texCoords = normalize(reflect(v.xyz, fPosition.xyz));
+            }
+
+            gl_FragColor = textureCube(texMap, texCoords);
+        }
+    </script>
+    <script type="text/javascript" src="./script3.js"></script>
+</body>
+
+</html>
