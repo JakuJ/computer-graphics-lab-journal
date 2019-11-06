@@ -94,62 +94,35 @@ function context() {
     var subdivision = 8;
     redraw_sphere(subdivision);
 
-    // texture
     const faceInfos = [{
             target: gl.TEXTURE_CUBE_MAP_POSITIVE_X,
-            filepath: './textures/cubemaps/autumn_cubemap/autumn_posx.png'
+            filepath: './textures/main/cm_left.png'
         },
         {
             target: gl.TEXTURE_CUBE_MAP_NEGATIVE_X,
-            filepath: './textures/cubemaps/autumn_cubemap/autumn_negx.png'
+            filepath: './textures/main/cm_right.png'
         },
         {
             target: gl.TEXTURE_CUBE_MAP_POSITIVE_Y,
-            filepath: './textures/cubemaps/autumn_cubemap/autumn_posy.png'
+            filepath: './textures/main/cm_top.png'
         },
         {
             target: gl.TEXTURE_CUBE_MAP_NEGATIVE_Y,
-            filepath: './textures/cubemaps/autumn_cubemap/autumn_negy.png'
+            filepath: './textures/main/cm_bottom.png'
         },
         {
             target: gl.TEXTURE_CUBE_MAP_POSITIVE_Z,
-            filepath: './textures/cubemaps/autumn_cubemap/autumn_posz.png'
+            filepath: './textures/main/cm_back.png'
         },
         {
             target: gl.TEXTURE_CUBE_MAP_NEGATIVE_Z,
-            filepath: './textures/cubemaps/autumn_cubemap/autumn_negz.png'
+            filepath: './textures/main/cm_front.png'
         },
     ];
 
-    // const faceInfos = [{
-    //         target: gl.TEXTURE_CUBE_MAP_POSITIVE_X,
-    //         filepath: './textures/main/cm_left.png'
-    //     },
-    //     {
-    //         target: gl.TEXTURE_CUBE_MAP_NEGATIVE_X,
-    //         filepath: './textures/main/cm_right.png'
-    //     },
-    //     {
-    //         target: gl.TEXTURE_CUBE_MAP_POSITIVE_Y,
-    //         filepath: './textures/main/cm_top.png'
-    //     },
-    //     {
-    //         target: gl.TEXTURE_CUBE_MAP_NEGATIVE_Y,
-    //         filepath: './textures/main/cm_bottom.png'
-    //     },
-    //     {
-    //         target: gl.TEXTURE_CUBE_MAP_POSITIVE_Z,
-    //         filepath: './textures/main/cm_back.png'
-    //     },
-    //     {
-    //         target: gl.TEXTURE_CUBE_MAP_NEGATIVE_Z,
-    //         filepath: './textures/main/cm_front.png'
-    //     },
-    // ];
-
     var texture = gl.createTexture();
     gl.bindTexture(gl.TEXTURE_CUBE_MAP, texture);
-    // gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
 
     for (let info of faceInfos) {
         const {
@@ -225,7 +198,7 @@ function context() {
         window.requestAnimationFrame(render);
     }
 
-    // gl.enable(gl.DEPTH_TEST);
+    gl.enable(gl.DEPTH_TEST);
     gl.enable(gl.CULL_FACE);
     gl.cullFace(gl.BACK);
 

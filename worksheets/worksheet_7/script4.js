@@ -9,11 +9,11 @@ function setupWebGL(canvas) {
 
 function context() {
     // Prepare WebGL
-    var canvas = document.getElementById("canvas2");
+    var canvas = document.getElementById("canvas4");
     var gl = setupWebGL(canvas);
 
     // Load shaders
-    var program = initShaders(gl, "vertex-shader-2", "fragment-shader-2");
+    var program = initShaders(gl, "vertex-shader-4", "fragment-shader-4");
     gl.useProgram(program);
 
     // POSITIONS
@@ -95,7 +95,8 @@ function context() {
     redraw_sphere(subdivision);
 
     // texture
-    const faceInfos = [{
+
+    const defaultFaceInfos = [{
             target: gl.TEXTURE_CUBE_MAP_POSITIVE_X,
             filepath: './textures/main/cm_left.png'
         },
@@ -121,43 +122,110 @@ function context() {
         },
     ];
 
-    var texture = gl.createTexture();
-    gl.bindTexture(gl.TEXTURE_CUBE_MAP, texture);
-    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-    
-    for (let info of faceInfos) {
-        const {
-            target,
-            filepath
-        } = info;
+    const otherTextures = ['autumn', 'brightday2', 'cloudyhills', 'greenhill', 'terrain'];
 
-        let image = document.createElement('img');
-        image.crossorigin = 'anonymous';
-        image.onload = e => {
-            gl.texImage2D(target, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, e.target);
-        };
-        image.src = filepath;
+    function getCubeTexture(name) {
+        return [{
+                target: gl.TEXTURE_CUBE_MAP_POSITIVE_X,
+                filepath: `./textures/cubemaps/${name}_cubemap/${name}_posx.png`
+            },
+            {
+                target: gl.TEXTURE_CUBE_MAP_NEGATIVE_X,
+                filepath: `./textures/cubemaps/${name}_cubemap/${name}_negx.png`
+            },
+            {
+                target: gl.TEXTURE_CUBE_MAP_POSITIVE_Y,
+                filepath: `./textures/cubemaps/${name}_cubemap/${name}_posy.png`
+            },
+            {
+                target: gl.TEXTURE_CUBE_MAP_NEGATIVE_Y,
+                filepath: `./textures/cubemaps/${name}_cubemap/${name}_negy.png`
+            },
+            {
+                target: gl.TEXTURE_CUBE_MAP_POSITIVE_Z,
+                filepath: `./textures/cubemaps/${name}_cubemap/${name}_posz.png`
+            },
+            {
+                target: gl.TEXTURE_CUBE_MAP_NEGATIVE_Z,
+                filepath: `./textures/cubemaps/${name}_cubemap/${name}_negz.png`
+            },
+        ];
     }
 
-    gl.uniform1i(gl.getUniformLocation(program, "texMap"), 0);
+    function loadCubeTexture(faceInfos, flip) {
+        var texture = gl.createTexture();
+        gl.activeTexture(gl.TEXTURE0);
+        gl.bindTexture(gl.TEXTURE_CUBE_MAP, texture);
+        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, flip); // only for default cube texture
+        
+        for (let info of faceInfos) {
+            const {
+                target,
+                filepath
+            } = info;
 
-    gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+            let image = document.createElement('img');
+            image.crossorigin = 'anonymous';
+            image.onload = e => {
+                gl.texImage2D(target, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, e.target);
+            };
+            image.src = filepath;
+        }
 
-    gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-    gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+        gl.uniform1i(gl.getUniformLocation(program, "texMap"), 0);
+
+        gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+
+        gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+        gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+    }
+
+    loadCubeTexture(defaultFaceInfos, true);
+
+    const texSelect = document.getElementById("textureSelect");
+    texSelect.onchange = () => {
+        if (texSelect.value === 'default') {
+            loadCubeTexture(defaultFaceInfos, true);
+        } else {
+            let faceInfos = getCubeTexture(texSelect.value);
+            loadCubeTexture(faceInfos, false);
+
+        }
+    };
+
+    // bump map texture
+
+    var image = document.createElement('img');
+    image.crossorigin = 'anonymous';
+    image.onload = e => {
+        var texture = gl.createTexture();
+        gl.activeTexture(gl.TEXTURE1);
+        gl.bindTexture(gl.TEXTURE_2D, texture);
+
+        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, image);
+
+        gl.uniform1i(gl.getUniformLocation(program, "bumpMap"), 1);
+
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
+
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+    };
+    image.src = 'textures/main/normalmap.png';
 
     function render(time) {
         // background
-        gl.clearColor(1.0, 0, 0, 1.0);
+        gl.clearColor(0, 0, 0, 1.0);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
         // view
-        var worldMatrix = rotateY(-time / 30);
+        var worldMatrix = [translate(0, 0, -3), rotateY(-time / 30)].reduce(mult);
 
         var viewMatrix = [
-            perspective(90, 1, 1, 20),
-            translate(0, 0, -3)
+            perspective(90, 1, 1, 20)
         ].reduce(mult);
 
         {
@@ -166,6 +234,9 @@ function context() {
         } {
             let uLocation = gl.getUniformLocation(program, 'viewMatrix');
             gl.uniformMatrix4fv(uLocation, false, flatten(viewMatrix));
+        } {
+            let uLocation = gl.getUniformLocation(program, 'eyePos');
+            gl.uniform4fv(uLocation, flatten(mult(inverse(worldMatrix), vec4(0, 0, 0, 1))));
         }
 
         var texMatrix = [
@@ -176,6 +247,9 @@ function context() {
         {
             let uLocation = gl.getUniformLocation(program, 'texMatrix');
             gl.uniformMatrix4fv(uLocation, false, flatten(texMatrix));
+        } {
+            let uLocation = gl.getUniformLocation(program, 'reflective');
+            gl.uniform1i(uLocation, false);
         }
 
         // background
@@ -184,6 +258,9 @@ function context() {
         {
             let uLocation = gl.getUniformLocation(program, 'texMatrix');
             gl.uniformMatrix4fv(uLocation, false, flatten(mat4()));
+        } {
+            let uLocation = gl.getUniformLocation(program, 'reflective');
+            gl.uniform1i(uLocation, true);
         }
 
         gl.drawArrays(gl.TRIANGLES, 36, elems.length - 36);
@@ -191,7 +268,7 @@ function context() {
         window.requestAnimationFrame(render);
     }
 
-    // gl.enable(gl.DEPTH_TEST);
+    gl.enable(gl.DEPTH_TEST);
     gl.enable(gl.CULL_FACE);
     gl.cullFace(gl.BACK);
 
