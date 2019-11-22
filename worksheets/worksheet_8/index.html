@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Worksheet 8</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="Jakub Janaszkiewicz">
+    <link rel="stylesheet" href="../../vendor/bootstrap/css/bootstrap.min.css">
+    <style>
+        table {
+            table-layout: auto;
+        }
+
+        th {
+            text-align: center;
+            font-size: 150%;
+        }
+    </style>
+</head>
+
+<body>
+    <table class="table">
+        <thead>
+            <th>Exercise</th>
+            <th>Solution</th>
+            <th></th>
+        </thead>
+        <tbody>
+            <tr>
+                <td>
+                    <h3>Part 1</h3>
+                    The scene to be rendered consists of three quadrilaterals (quads). One is a large texture mapped
+                    quad in the plane y = −1 (x in [−2, 2], z in [−1, −5]), the others are smaller quads colored
+                    red. Let us refer to the large quad as the ground. One of the two smaller quads should be parallel
+                    to y = −1, but placed above the ground (y = −0.5, x in [0.25, 0.75], z in [−1.25, −1.75]).
+                    The other should be perpendicular to y = −1 with two vertices intersecting the ground (x = −1,
+                    y in [−1, 0], z in [−2.5, −3]). Create a WebGL program that draws this scene. Here are some
+                    steps:
+                    <br><br>
+                    <ul>
+                        <li>
+                            Start from Part 1 of Worksheet 6. Use the coordinates given above to set the vertex
+                            coordinates of the ground. Adjust the texture coordinates of the ground so that the texture
+                            fills out the square without being repeated.
+                        </li>
+                        <li>
+                            Replace the checkerboard texture by the texture image in xamp23.png (available on File
+                            Sharing).
+                        </li>
+                        <li>
+                            In initialization, switch to gl.TEXTURE1 using gl.activeTexture and create a new texture of
+                            1x1 resolution, where you store just a single red color: Uint8Array([255, 0, 0]). [Angel
+                            7.5.6]
+                        </li>
+                        <li>
+                            Add the two smaller quads to your vertex and texture coordinate buffers. Draw the ground
+                            quad with texture 0 and the smaller red quads with texture 1. [Angel 7.5.6]
+                        </li>
+                    </ul>
+                </td>
+                <td>
+                    <canvas id="canvas1" width="512" height="512">Please use a browser supporting HTML5</canvas>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <h3>Part 2</h3>
+                    A light source position is needed to cast shadows. Introduce an animated point light that circles
+                    the scene with circle center (0, 2, −2) and radius 2. Implement projection shadows using the
+                    following steps:
+                    <br><br>
+                    <ul>
+                        <li>
+                            Create a projection matrix M that projects geometry onto the ground plane y = −1.
+                            Projection to a plane different from y = 0 is done by subtracting the y-coordinate of
+                            the plane from the y-coordinate of the light source in M. [Angel 5.10]
+                        </li>
+                        <li>
+                            Construct the shadow model-view matrix by concatenating M with model, view, and
+                            translation matrices so that shadow polygons are projected from the current position of the
+                            point light onto the ground plane. [Angel 5.10]
+                        </li>
+                        <li>
+                            Use the shadow model-view matrix to draw the smaller quads again but as shadow polygons.
+                            Note that drawing order is important. Ensure that the shadow polygons are in front of the
+                            ground polygon, but behind the smaller quads. [Angel 8.11.7]
+                        </li>
+                    </ul>
+                </td>
+                <td>
+                    <canvas id="canvas2" width="512" height="512">Please use a browser supporting HTML5</canvas>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <h3>Part 3</h3>
+                    One problem with shadow polygons is that they are drawn even if there is no ground polygon. Use the
+                    depth buffer with a depth test function that accepts fragments with greater depth values to draw
+                    shadow polygons only if there is also a ground polygon. Handle z-fighting using an offset in the
+                    projection matrix. [Angel 8.11.5]
+                    <br><br>
+                    Introduce a uniform visibility variable in your fragment shader. Use this variable as a
+                    multiplication factor to draw the shadow polygons in black.
+                </td>
+                <td>
+                    <canvas id="canvas3" width="512" height="512">Please use a browser supporting HTML5</canvas>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <h3>Part 4</h3>
+                    The black shadows seem too dark. We would like to see a darker version of the ground texture in the
+                    shadows. Semi-transparent shadow polygons can achieve this effect. Enable blending and set an
+                    appropriate blending function to render a darker version of the ground texture in the shadows.
+                    [Angel 7.10-7.10.3]
+                </td>
+                <td>
+                    <canvas id="canvas4" width="512" height="512">Please use a browser supporting HTML5</canvas>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <script type="text/javascript" src="../../common/webgl-utils.js"></script>
+    <script type="text/javascript" src="../../common/initShaders.js"></script>
+    <script type="text/javascript" src="../../common/MV.js"></script>
+    <script type="text/javascript" src="../../common/OBJParser.js"></script>
+    <script type="text/javascript" src="../../common/simple_camera.js"></script>
+
+
+    <!-- PARTS 1 + 2 + 3 -->
+    <script id="vertex-shader-1" type="x-shader/x-vertex">
+        attribute vec3 position;
+        attribute vec2 texPosition;
+        
+        uniform mat4 modelView;
+        uniform mat4 perspective;
+        
+        varying vec2 fTexCoord;
+
+        void main() {
+            fTexCoord = texPosition;
+            gl_Position = perspective * modelView * vec4(position, 1);
+        }
+    </script>
+    <script id="fragment-shader-1" type="x-shader/x-fragment">
+        precision mediump float;
+        
+        varying vec2 fTexCoord;
+        uniform sampler2D texture;
+
+        void main() {
+            gl_FragColor = texture2D(texture, fTexCoord);
+        }
+    </script>
+    <script type="text/javascript" src="./script1.js"></script>
+    <script type="text/javascript" src="./script2.js"></script>
+
+    <!-- PART 3 -->
+    <script id="fragment-shader-3" type="x-shader/x-fragment">
+        precision mediump float;
+        
+        varying vec2 fTexCoord;
+        uniform sampler2D texture;
+        uniform float visible;
+
+        void main() {
+            gl_FragColor = vec4(vec3(visible), 1) * texture2D(texture, fTexCoord);
+        }
+    </script>
+    <script type="text/javascript" src="./script3.js"></script>
+
+    <!-- PART 4 -->
+    <script id="fragment-shader-4" type="x-shader/x-fragment">
+        precision mediump float;
+        
+        varying vec2 fTexCoord;
+        uniform sampler2D texture;
+        uniform bool visible;
+
+        void main() {
+            if (visible) {
+                gl_FragColor = texture2D(texture, fTexCoord);
+            } else {
+                gl_FragColor = vec4(0, 0, 0, 0.5) * texture2D(texture, fTexCoord);
+            }
+        }
+    </script>
+    <script type="text/javascript" src="./script4.js"></script>
+</body>
+
+</html>
