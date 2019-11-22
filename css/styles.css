@@ -65,6 +65,12 @@ h3 {
   font-size: 1.2rem;
 }
 
+.worksheet-item img {
+  max-height: 100%;
+  width: 100%;
+  object-fit: cover;
+}
+
 @media (min-width: 992px) {
   .worksheet-item .caption {
     -webkit-transition: -webkit-clip-path 0.25s ease-out, background-color 0.7s;

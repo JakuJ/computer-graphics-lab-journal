@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Worksheet 10</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="Jakub Janaszkiewicz">
+    <link rel="stylesheet" href="../../vendor/bootstrap/css/bootstrap.min.css">
+    <style>
+        table {
+            table-layout: auto;
+        }
+
+        th {
+            text-align: center;
+            font-size: 150%;
+        }
+    </style>
+</head>
+
+<body>
+    <table class="table">
+        <thead>
+            <th>Exercise</th>
+            <th>Solution</th>
+            <th></th>
+        </thead>
+        <tbody>
+            <tr>
+                <td>
+                    <h3>Part 1</h3>
+                    Simple orbiting
+                    <br><br>
+                    Pick one of your previous solutions where you draw in 3D. Use the mouse events from the WebGL
+                    Programming Guide (“Rotate and Object with the Mouse”) to set mouse events that modify your view
+                    matrix when a mouse button is down.
+                </td>
+                <td>
+                    <canvas id="canvas1" width="512" height="512">Please use a browser supporting HTML5</canvas>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <h3>Part 2</h3>
+                    Quaternion rotation
+                    <br><br>
+                    Switch to using quaternions for the orbit rotation instead of Euler angle. In this way, you can
+                    avoid the gimbal lock. Get x- and y-coordinates for your mouse position that are in [−1,1].
+                    Project these coordinates to a spherical surface of radius 2. Normalize the resulting vector and
+                    build a quaternion that rotates from the previous to the current of these vectors to find the
+                    rotation corresponding to the mouse movement. To solve this part, you need a quaternion math
+                    library. This is available in quaternion.js, which has been uploaded to File Sharing in the “code
+                    and data” folder.
+                </td>
+                <td>
+                    <canvas id="canvas2" width="512" height="512">Please use a browser supporting HTML5</canvas>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <h3>Part 3 + 4</h3>
+                    Dolly and panning + spinning
+                    <br><br>
+                    Set up interaction modes (using either webpage buttons or mouse buttons) for orbiting, dolly, and
+                    panning. Store distance to the eye point from the look-at point and the xy-displacement of the
+                    look-at point together with the quaternions used for orbiting. In dolly mode, the difference in the
+                    y- coordinate of the mouse position is used to update the distance to the eye from the look-at
+                    point. In panning mode, the differences in x- and y- coordinates of the mouse position are
+                    used for displacement of both look-at and eye points along the world space basis vectors of the
+                    image plane.
+                    <br><br>
+                    To do spinning, continue to update the quaternion rotation of the view using another quaternion
+                    representing the last incremental rotation recorded in the onmousemove function. Stop the spinning
+                    by resetting the incremental rotation to an identity quaternion when the mouse is released at the
+                    same position as the one last recorded in the onmousemove function.
+                </td>
+                <td>
+                    <canvas id="canvas3" width="512" height="512">Please use a browser supporting HTML5</canvas>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <script type="text/javascript" src="../../common/webgl-utils.js"></script>
+    <script type="text/javascript" src="../../common/initShaders.js"></script>
+    <script type="text/javascript" src="../../common/MV.js"></script>
+    <script type="text/javascript" src="../../common/OBJParser.js"></script>
+    <script type="text/javascript" src="../../common/quaternion.js"></script>
+
+    <!-- PART 1 -->
+    <script id="vertex-shader-1" type="x-shader/x-vertex">
+        attribute vec3 a_Position;
+        attribute vec3 a_Normal;
+        attribute vec4 a_Color;
+        
+        uniform mat4 modelView;
+        uniform mat4 perspectiveMatrix;
+
+        varying vec4 fPosition;
+        varying vec4 fNormal;
+        varying vec4 fColor;
+
+        void main() {
+            fPosition = vec4(a_Position, 1);
+            fNormal = vec4(a_Normal, 0);
+            fColor = a_Color;
+            
+            vec4 cameraPos = modelView * fPosition;
+            gl_Position = perspectiveMatrix * cameraPos;
+        }
+    </script>
+    <script id="fragment-shader-1" type="x-shader/x-fragment">
+        precision highp float;
+        
+        varying vec4 fPosition;
+        varying vec4 fNormal;
+        varying vec4 fColor;
+
+        uniform float Ka;
+        uniform float Kd;
+        uniform float Ks;
+        uniform float shininess;
+        uniform vec3 lightEmission;
+
+        uniform mat4 modelView;
+        
+        // light
+        vec4 lightDirection = vec4(0, 0, -1, 0);
+        
+        void main() {
+            vec4 cameraPos = modelView * fPosition;
+
+            vec4 N = normalize(modelView * fNormal);
+            vec4 L = normalize(-lightDirection);
+            
+            // ambient term
+            vec3 ambient = Ka * lightEmission;
+            
+            // diffuse term
+            float lambertian = abs(dot(N, L)); // modified to light up the inside (back faces)
+            vec3 diffuse = Kd * lightEmission * lambertian;
+
+            // specular term
+            vec4 V = normalize(-cameraPos);
+            vec4 R = normalize(reflect(-L, N));
+
+            vec3 specular = vec3(0);
+            if (lambertian > 0.0) {
+                float cos_alpha = max(0.0, dot(V, R));
+                specular = Ks * lightEmission * pow(cos_alpha, shininess);
+            }
+
+            // final color
+            gl_FragColor = vec4(fColor.xyz * (ambient + diffuse + specular), 1);
+        }
+    </script>
+    <script type="text/javascript" src="./script1.js"></script>
+    <script type="text/javascript" src="./script2.js"></script>
+    <script type="text/javascript" src="./script3.js"></script>
+</body>
+
+</html>
