@@ -8,16 +8,62 @@
     <meta name="author" content="Jakub Janaszkiewicz">
     <link rel="stylesheet" href="../../vendor/bootstrap/css/bootstrap.min.css">
     <style>
-        html, body, canvas {
+        html,
+        body,
+        canvas {
             display: block;
             width: 100%;
             height: 100%;
+        }
+
+        .panels {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: auto;
+            background: rgba(1, 1, 1, 0.123);
+            color: white;
         }
     </style>
 </head>
 
 <body>
     <canvas id="canvas1">Please use a browser supporting HTML5</canvas>
+    <div class="panels">
+        <div>
+            K_ambient &nbsp; &nbsp; &nbsp;
+            <input id="ka" name="ka" type="range" min="0" max="1" step="0.01" value="0" />
+        </div>
+        <div>
+            K_glow &nbsp; &nbsp; &nbsp;
+            <input id="kg" name="kg" type="range" min="0" max="1" step="0.01" value="0" />
+        </div>
+        <div>
+            K_diffuse &nbsp; &nbsp; &nbsp;
+            <input id="kd" name="kd" type="range" min="0" max="1" step="0.01" value="1" />
+        </div>
+        <div>
+            K_specular &nbsp; &nbsp; &nbsp;
+            <input id="ks" name="ks" type="range" min="0" max="1" step="0.01" value="0" />
+        </div>
+        <div>
+            Shininess &nbsp; &nbsp; &nbsp;
+            <input id="shininess" name="shininess" type="range" min="1" max="20" step="1" value="10" />
+        </div>
+        <div>
+            Shadows &nbsp; &nbsp; &nbsp;
+            <input id="shadows" name="shadows" type="checkbox" checked />
+        </div>
+        <div>
+            Light attenuation &nbsp; &nbsp; &nbsp;
+            <input id="attenuation" name="attenuation" type="checkbox" checked />
+        </div>
+        <div>
+            Attenuation coefficient &nbsp; &nbsp; &nbsp;
+            <input id="attenuationCoefficient" name="attenuationCoefficient" type="range" min="0" max="0.1" step="0.001"
+                value="0.07" />
+        </div>
+    </div>
     <script type="text/javascript" src="../../common/webgl-utils.js"></script>
     <script type="text/javascript" src="../../common/initShaders2.js"></script>
     <script type="text/javascript" src="../../common/MV.js"></script>

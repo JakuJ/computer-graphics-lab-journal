@@ -1,15 +1,23 @@
 #define MAX_STEPS 50
-#define MAX_DIST 150.0
+#define MAX_DIST 200.0
 #define SURF_DIST 0.001
-#define WORLD_SIZE 12.0
-#define GLOW_MARGIN 2.0
-#define SHADOWS 0
-#define ATTENUATION 1
+#define WORLD_SIZE 10.0
+#define GLOW_MARGIN 1.0
 
 precision mediump float;
 
 varying vec2 fragPosition;
 uniform float time;
+uniform float Ka;
+uniform float Kg;
+uniform float Kd;
+uniform float Ks;
+uniform float shininess;
+
+uniform bool useShadows;
+
+uniform bool useAttenuation;
+uniform float attenuationCoefficient;
 
 // float modulo
 vec3 vecMod(vec3 point, float boxSize) {
@@ -69,22 +77,15 @@ vec3 getNormal(vec3 p) {
 }
 
 vec3 getLightPosition(vec3 rayOrigin) {
-  return rayOrigin + WORLD_SIZE * 2.0 * vec3(sin(time), 0, cos(time));
+  return rayOrigin + WORLD_SIZE * 2.0 * vec3(-sin(time), 0, -cos(time));
 }
 
 vec3 getLight(vec3 point, vec3 rayOrigin, float minDist) {
-  // coefficients
-  float Ka = 0.05;
-  float Kg = 0.2;
-  float Kd = 0.65;
-  float Ks = 0.2;
-  float alpha = 50.0;
-
   // material properties
   vec3 Ma = vec3(1, 1, 1);        // ambient
   vec3 Mg = vec3(1, 0.7, 1);      // glow
   vec3 Md = vec3(0.76, 0.7, 0.5); // diffuse
-  vec3 Ms = vec3(1, 1, 0);        // specular
+  vec3 Ms = vec3(1, 1, 1);        // specular
 
   // point light in the eye
   vec3 lightPos = getLightPosition(rayOrigin);
@@ -93,9 +94,6 @@ vec3 getLight(vec3 point, vec3 rayOrigin, float minDist) {
   vec3 v = normalize(rayOrigin - point);
 
   vec3 color = vec3(0);
-
-  // ambient term
-  color += Ka * Ma;
 
   // glow term
   if (minDist < GLOW_MARGIN) {
@@ -109,30 +107,34 @@ vec3 getLight(vec3 point, vec3 rayOrigin, float minDist) {
     return color;
   }
 
-  if (dot(n, l) > 0.0) {
-    // lambertian term
-    float diffuse = dot(n, l);
+  // ambient term
+  color += Ka * Ma;
 
+  // lambertian term
+  float diffuse = dot(n, l);
+
+  if (diffuse > 0.0) {
     // specular term
-    float cos_alpha = dot(reflect(-l, n), v);
-    float specular = pow(cos_alpha, alpha);
+    float cos_alpha = clamp(dot(reflect(-l, n), v), 0.0, 1.0);
+    float specular = pow(cos_alpha, shininess);
 
-#if SHADOWS
-    float minLight;
-    float distanceToLight = rayMarch(point + n * SURF_DIST * 2., l, minLight);
-    // point light shadows
-    if (distanceToLight < length(lightPos - point)) {
-      diffuse *= 0.5;
-      specular *= 0.0;
+    if (useShadows) {
+      float minLight;
+      float distanceToLight = rayMarch(point + n * SURF_DIST * 2., l, minLight);
+      // point light shadows
+      if (distanceToLight < length(lightPos - point)) {
+        diffuse *= 0.5;
+        specular *= 0.0;
+      }
     }
-#endif
-#if ATTENUATION
-    // inverse square law
-    float m = exp(-0.01 * length(lightPos - point));
-    diffuse *= m;
-    specular *= m;
 
-#endif
+    if (useAttenuation) {
+      // inverse square law
+      float m = exp(-attenuationCoefficient * length(lightPos - point));
+      diffuse *= m;
+      specular *= m;
+    }
+
     color += Md * Kd * diffuse;
     color += Ms * Ks * specular;
   }
@@ -142,13 +144,13 @@ vec3 getLight(vec3 point, vec3 rayOrigin, float minDist) {
 
 void main() {
   // model space
-  vec3 rayOrigin = vec3(time, 4, time);
+  vec3 rayOrigin = vec3(time, WORLD_SIZE * 0.5, time);
   vec3 rayDirection = normalize(vec3(fragPosition, 1));
 
   float minDist;
   float dist = rayMarch(rayOrigin, rayDirection, minDist);
 
   vec3 point = rayOrigin + dist * rayDirection;
-  vec3 color = vec3(getLight(point, rayOrigin, minDist));
+  vec3 color = getLight(point, rayOrigin, minDist);
   gl_FragColor = vec4(color, 1);
 }

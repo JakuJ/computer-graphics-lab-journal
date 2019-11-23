@@ -39,7 +39,31 @@ function context() {
 
         {
             let location = gl.getUniformLocation(program, "time");
-            gl.uniform1f(location, time / 200);
+            gl.uniform1f(location, time / 500);
+        }
+
+        var floatUniforms = {
+            'Ka': document.getElementById("ka").value,
+            'Kg': document.getElementById("kg").value,
+            'Kd': document.getElementById("kd").value,
+            'Ks': document.getElementById("ks").value,
+            'shininess': document.getElementById("shininess").value,
+            'attenuationCoefficient': document.getElementById("attenuationCoefficient").value
+        };
+
+        for (key in floatUniforms) {
+            let uLocation = gl.getUniformLocation(program, key);
+            gl.uniform1f(uLocation, floatUniforms[key]);
+        }
+
+        var flags = {
+            'useShadows': document.getElementById("shadows").checked,
+            'useAttenuation': document.getElementById("attenuation").checked
+        }
+
+        for (key in flags) {
+            let uLocation = gl.getUniformLocation(program, key);
+            gl.uniform1i(uLocation, flags[key]);
         }
 
         gl.drawArrays(gl.TRIANGLE_FAN, 0, vertices.length);
