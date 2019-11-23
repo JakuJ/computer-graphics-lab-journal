@@ -21,48 +21,63 @@
             top: 0;
             left: 0;
             width: auto;
-            background: rgba(1, 1, 1, 0.123);
+            background: transparent;
             color: white;
+        }
+
+        input[type="range"]::-webkit-slider-runnable-track {
+            cursor: pointer;
+            background-image: linear-gradient(to left,
+                    rgba(75, 198, 125, 0.5) 30%,
+                    rgba(241, 196, 15, 0.5) 45%,
+                    rgba(228, 53, 50, 0.5) 99%);
+            border-radius: 10px;
         }
     </style>
 </head>
 
 <body>
     <canvas id="canvas1">Please use a browser supporting HTML5</canvas>
-    <div class="panels">
-        <div>
-            K_ambient &nbsp; &nbsp; &nbsp;
-            <input id="ka" name="ka" type="range" min="0" max="1" step="0.01" value="0" />
-        </div>
-        <div>
-            K_glow &nbsp; &nbsp; &nbsp;
-            <input id="kg" name="kg" type="range" min="0" max="1" step="0.01" value="0" />
-        </div>
-        <div>
-            K_diffuse &nbsp; &nbsp; &nbsp;
-            <input id="kd" name="kd" type="range" min="0" max="1" step="0.01" value="1" />
-        </div>
-        <div>
-            K_specular &nbsp; &nbsp; &nbsp;
-            <input id="ks" name="ks" type="range" min="0" max="1" step="0.01" value="0" />
-        </div>
-        <div>
-            Shininess &nbsp; &nbsp; &nbsp;
-            <input id="shininess" name="shininess" type="range" min="1" max="20" step="1" value="10" />
-        </div>
-        <div>
-            Shadows &nbsp; &nbsp; &nbsp;
-            <input id="shadows" name="shadows" type="checkbox" />
-        </div>
-        <div>
-            Light attenuation &nbsp; &nbsp; &nbsp;
-            <input id="attenuation" name="attenuation" type="checkbox" checked />
-        </div>
-        <div>
-            Attenuation coefficient &nbsp; &nbsp; &nbsp;
-            <input id="attenuationCoefficient" name="attenuationCoefficient" type="range" min="0" max="0.1" step="0.001"
-                value="0.07" />
-        </div>
+    <table class="panels">
+        <tr>
+            <td>K_ambient &nbsp; &nbsp; &nbsp;</td>
+            <td><input id="ka" name="ka" type="range" min="0" max="1" step="0.01" value="0" /></td>
+        </tr>
+        <tr>
+            <td>K_glow &nbsp; &nbsp; &nbsp;</td>
+            <td><input id="kg" name="kg" type="range" min="0" max="1" step="0.01" value="0.3" /></td>
+        </tr>
+        <tr>
+            <td>Glow radius &nbsp; &nbsp; &nbsp;</td>
+            <td><input id="glowRadius" name="glowRadius" type="range" min="0.1" max="10" step="0.1" value="0.5" /></td>
+        </tr>
+        <tr>
+            <td>K_diffuse &nbsp; &nbsp; &nbsp;</td>
+            <td><input id="kd" name="kd" type="range" min="0" max="1" step="0.01" value="0.4" /></td>
+        </tr>
+        <tr>
+            <td>K_specular &nbsp; &nbsp; &nbsp;</td>
+            <td><input id="ks" name="ks" type="range" min="0" max="1" step="0.01" value="0" /></td>
+        </tr>
+        <tr>
+            <td>Shininess &nbsp; &nbsp; &nbsp;</td>
+            <td><input id="shininess" name="shininess" type="range" min="1" max="20" step="1" value="10" /></td>
+        </tr>
+        <tr>
+            <td>Shadows &nbsp; &nbsp; &nbsp;</td>
+            <td><input id="shadows" name="shadows" type="checkbox" checked /></td>
+        </tr>
+        <tr>
+            <td>Light attenuation &nbsp; &nbsp; &nbsp;</td>
+            <td><input id="attenuation" name="attenuation" type="checkbox" checked /></td>
+        </tr>
+        <tr>
+            <td> Attenuation coeff. &nbsp; &nbsp; &nbsp;</td>
+            <td><input id="attenuationCoefficient" name="attenuationCoefficient" type="range" min="0" max="0.1"
+                    step="0.001" value="0.05"></td>
+        </tr>
+    </table>
+    </div>
     </div>
     <script type="text/javascript" src="../../common/webgl-utils.js"></script>
     <script type="text/javascript" src="../../common/initShaders2.js"></script>

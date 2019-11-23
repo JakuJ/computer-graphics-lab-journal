@@ -45,6 +45,7 @@ function context() {
         var floatUniforms = {
             'Ka': document.getElementById("ka").value,
             'Kg': document.getElementById("kg").value,
+            'glowRadius': document.getElementById("glowRadius").value,
             'Kd': document.getElementById("kd").value,
             'Ks': document.getElementById("ks").value,
             'shininess': document.getElementById("shininess").value,
