@@ -3,7 +3,7 @@ class SimpleCamera {
     constructor(position, pitch, yaw, depth, canvas) {
         this.position = position;
 
-        this.speed = 0.5;
+        this.speed = 0.05;
         this.pitch = pitch;
         this.yaw = yaw;
 
