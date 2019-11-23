@@ -25,6 +25,14 @@
             color: white;
         }
 
+        #FPScounter {
+            position: fixed;
+            top: 0px;
+            right: 20px;
+            color: white;
+            font-size: x-large;
+        }
+
         input[type="range"]::-webkit-slider-runnable-track {
             cursor: pointer;
             background-image: linear-gradient(to left,
@@ -38,6 +46,7 @@
 
 <body>
     <canvas id="canvas1">Please use a browser supporting HTML5</canvas>
+    <div id="FPScounter">60</div>
     <table class="panels">
         <tr>
             <td>K_ambient &nbsp; &nbsp; &nbsp;</td>
@@ -65,7 +74,7 @@
         </tr>
         <tr>
             <td>Shadows &nbsp; &nbsp; &nbsp;</td>
-            <td><input id="shadows" name="shadows" type="checkbox" checked /></td>
+            <td><input id="shadows" name="shadows" type="checkbox" /></td>
         </tr>
         <tr>
             <td>Distance attenuation &nbsp; &nbsp; &nbsp;</td>

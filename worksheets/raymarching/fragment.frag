@@ -1,4 +1,4 @@
-#define MAX_STEPS 1000
+#define MAX_STEPS 50
 #define MAX_DIST 500.0
 #define SURF_DIST 0.05
 #define WORLD_SIZE 10.0
@@ -40,11 +40,9 @@ float de_sphere(vec3 point, vec3 center, float radius) {
 float de_plane(vec3 point, float y) { return abs(point.y - y); }
 
 float getDistance(vec3 point) {
-  float sphereDist1 = de_sphere(point, vec3(0, 0, 0), 2.0);
-  float sphereDist2 = de_sphere(point, vec3(0, 0, 0), 2.0);
+  float sphereDist = de_sphere(point, vec3(0, 0, 0), 2.0);
   float planeDist1 = de_plane(point, 0.0);
-  float planeDist2 = de_plane(point, 2.0 * WORLD_SIZE);
-  return smoothUnion(smoothUnion(planeDist1, sphereDist1, 2.0), planeDist2, 2.0);
+  return smoothUnion(planeDist1, sphereDist, 2.0);
 }
 
 float glowIntensity(vec3 point, float dist) {
@@ -130,17 +128,17 @@ vec3 getLightPosition(vec3 rayOrigin) {
   return rayOrigin + WORLD_SIZE * vec3(0, 0.5, 0);
 }
 
-vec3 getLight(vec3 rayOrigin, vec3 rayDirection) {
+vec3 getLight(vec3 rayOrigin, vec3 rayDirection, out vec3 point) {
   // material properties
   const vec3 Ma = vec3(1, 1, 1);        // ambient
-  const vec3 Mg = vec3(1, 0.6, 0.8);        // glow
+  const vec3 Mg = vec3(1, 0.6, 0.8);    // glow
   const vec3 Md = vec3(0.76, 0.7, 0.5); // diffuse
   const vec3 Ms = vec3(1, 1, 1);        // specular
 
   // ray march
   float glowDensity;
   float dist = rayMarch(rayOrigin, rayDirection, glowDensity);
-  vec3 point = rayOrigin + dist * rayDirection;
+  point = rayOrigin + dist * rayDirection;
 
   // point light in the eye
   vec3 lightPos = getLightPosition(rayOrigin);
@@ -199,6 +197,18 @@ void main() {
   vec3 rayOrigin = vec3(WORLD_SIZE * 0.5, WORLD_SIZE, 3.0 * time);
   vec3 rayDirection = normalize(vec3(fragPosition, 1));
 
-  vec3 color = getLight(rayOrigin, rayDirection);
+  vec3 point;
+  vec3 color = getLight(rayOrigin, rayDirection, point);
+
+  if (getDistance(point) < SURF_DIST) {
+    vec3 refl = normalize(reflect(rayDirection, getNormal(point)));
+    vec3 point2;
+    vec3 color2 = getLight(point + 2.0 * refl * SURF_DIST, refl, point2);
+    if (useAttenuation) {
+      color2 *= exp(-attenuationCoefficient * length(rayOrigin - point));
+    }
+    color += color2;
+  }
+
   gl_FragColor = vec4(color, 1);
 }

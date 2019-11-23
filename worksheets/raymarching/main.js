@@ -38,7 +38,18 @@ function context() {
         gl.uniform1f(uLocation, 1.6);
     }
 
+    // FPS counter
+    const times = [];
+
     function render(time) {
+        // fps
+        const now = performance.now();
+        while (times.length > 0 && times[0] <= now - 1000) {
+            times.shift();
+        }
+        times.push(now);
+        document.getElementById("FPScounter").innerText = times.length;
+
         // background
         gl.clearColor(0.5, 0.9, 1, 1.0);
         gl.clear(gl.COLOR_BUFFER_BIT);
