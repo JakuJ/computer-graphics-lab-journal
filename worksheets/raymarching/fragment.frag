@@ -129,7 +129,6 @@ vec3 getLight(vec3 point, vec3 rayOrigin, float minDist) {
     }
 
     if (useAttenuation) {
-      // inverse square law
       float m = exp(-attenuationCoefficient * length(lightPos - point));
       diffuse *= m;
       specular *= m;
