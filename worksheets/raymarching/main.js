@@ -39,7 +39,7 @@ function context() {
 
         {
             let location = gl.getUniformLocation(program, "time");
-            gl.uniform1f(location, time / 500);
+            gl.uniform1f(location, time / 200);
         }
 
         gl.drawArrays(gl.TRIANGLE_FAN, 0, vertices.length);
