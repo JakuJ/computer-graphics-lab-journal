@@ -1,7 +1,8 @@
 #define MAX_STEPS 50
-#define MAX_DIST 50.0
+#define MAX_DIST 60.0
 #define SURF_DIST 0.1
 #define WORLD_SIZE 10.0
+#define REFLECTIONS 1
 
 precision highp float;
 
@@ -200,7 +201,8 @@ void main() {
   vec3 point;
   vec3 color = getLight(rayOrigin, rayDirection, point);
 
-  // first reflection
+// first reflection
+#if REFLECTIONS >= 1
   if (getDistance(point) < SURF_DIST) {
     vec3 refl = normalize(reflect(rayDirection, getNormal(point)));
     vec3 point2;
@@ -209,7 +211,7 @@ void main() {
       color2 *= exp(-attenuationCoefficient * length(rayOrigin - point));
     }
     color += 0.5 * color2;
-
+#if REFLECTIONS == 2
     // second reflection
     if (getDistance(point2) < SURF_DIST) {
       vec3 refl2 = normalize(reflect(refl, getNormal(point2)));
@@ -220,7 +222,8 @@ void main() {
       }
       color += 0.25 * color3;
     }
+#endif
   }
-
+#endif
   gl_FragColor = vec4(color, 1);
 }
