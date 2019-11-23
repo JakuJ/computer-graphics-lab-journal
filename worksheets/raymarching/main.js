@@ -32,6 +32,12 @@ function context() {
         gl.enableVertexAttribArray(location);
     }
 
+    // one-time send data to vertex shader
+    {
+        let uLocation = gl.getUniformLocation(program, "aspectRatio");
+        gl.uniform1f(uLocation, 1.6);
+    }
+
     function render(time) {
         // background
         gl.clearColor(0.5, 0.9, 1, 1.0);

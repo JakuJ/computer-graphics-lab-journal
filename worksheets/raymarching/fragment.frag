@@ -1,6 +1,6 @@
-#define MAX_STEPS 50
-#define MAX_DIST 1000.0
-#define SURF_DIST 0.01
+#define MAX_STEPS 1000
+#define MAX_DIST 500.0
+#define SURF_DIST 0.05
 #define WORLD_SIZE 10.0
 
 precision highp float;
@@ -25,8 +25,8 @@ vec3 vecMod(vec3 point, float boxSize) {
   return point - boxSize * base;
 }
 
-// polynomial smooth min (k = 0.1);
-float sminCubic(float a, float b, float k) {
+// cubic smooth min (k = 0.1);
+float smoothUnion(float a, float b, float k) {
   float h = max(k - abs(a - b), 0.0) / k;
   return min(a, b) - h * h * h * k * (1.0 / 6.0);
 }
@@ -37,12 +37,26 @@ float de_sphere(vec3 point, vec3 center, float radius) {
   return length(point - center) - radius;
 }
 
-float de_plane(vec3 point, float y) { return point.y - y; }
+float de_plane(vec3 point, float y) { return abs(point.y - y); }
 
 float getDistance(vec3 point) {
-  float sphereDist = de_sphere(point, vec3(0, 1, 0), 2.0);
-  float planeDist = de_plane(point, 0.0);
-  return sminCubic(sphereDist, planeDist, 2.0);
+  float sphereDist1 = de_sphere(point, vec3(0, 0, 0), 2.0);
+  float sphereDist2 = de_sphere(point, vec3(0, 0, 0), 2.0);
+  float planeDist1 = de_plane(point, 0.0);
+  float planeDist2 = de_plane(point, 2.0 * WORLD_SIZE);
+  return smoothUnion(smoothUnion(planeDist1, sphereDist1, 2.0), planeDist2, 2.0);
+}
+
+float glowIntensity(vec3 point, float dist) {
+  float d = getDistance(point);
+  if (d < glowRadius) {
+    float intensity = 1.0 - (d / glowRadius);
+    if (useAttenuation) {
+      intensity *= exp(-attenuationCoefficient * dist);
+    }
+    return intensity;
+  }
+  return 0.0;
 }
 
 float rayMarch(vec3 rayOrigin, vec3 rayDirection, out float glowDensity) {
@@ -56,15 +70,8 @@ float rayMarch(vec3 rayOrigin, vec3 rayDirection, out float glowDensity) {
     dist = getDistance(point);
     total += dist;
 
-    // volumetric glow density using light attenuation
-    if (dist < glowRadius) {
-      float glowPointIntensity = 0.1;
-      if (useAttenuation) {
-        glowPointIntensity *= exp(-attenuationCoefficient * total);
-      }
-
-      glowDensity += glowPointIntensity;
-    }
+    // volumetric (?) glow density using distance attenuation
+    glowDensity += glowIntensity(point, total);
 
     if (total > MAX_DIST || dist < SURF_DIST) {
       break;
@@ -72,12 +79,14 @@ float rayMarch(vec3 rayOrigin, vec3 rayDirection, out float glowDensity) {
   }
 
   if (dist < SURF_DIST) {
-    float surfaceGlow = 1.0;
+    float surfaceGlow = 10.0;
     if (useAttenuation) {
       surfaceGlow *= exp(-attenuationCoefficient * total);
     }
     glowDensity = max(glowDensity, surfaceGlow);
   }
+
+  glowDensity *= 0.1;
 
   return total;
 }
@@ -108,7 +117,7 @@ float softShadow(vec3 rayOrigin, vec3 rayDirection, float distanceToLight,
 
 vec3 getNormal(vec3 p) {
   float d = getDistance(p);
-  const vec2 eps = vec2(.01, 0);
+  const vec2 eps = vec2(SURF_DIST * 0.1, 0);
 
   // numerical approximation to a derivative
   vec3 n = d - vec3(getDistance(p - eps.xyy), getDistance(p - eps.yxy),
@@ -118,13 +127,13 @@ vec3 getNormal(vec3 p) {
 }
 
 vec3 getLightPosition(vec3 rayOrigin) {
-  return rayOrigin + WORLD_SIZE * vec3(-sin(time), 0, cos(time));
+  return rayOrigin + WORLD_SIZE * vec3(0, 0.5, 0);
 }
 
 vec3 getLight(vec3 rayOrigin, vec3 rayDirection) {
   // material properties
   const vec3 Ma = vec3(1, 1, 1);        // ambient
-  const vec3 Mg = vec3(1, 0, 0);        // glow
+  const vec3 Mg = vec3(1, 0.6, 0.8);        // glow
   const vec3 Md = vec3(0.76, 0.7, 0.5); // diffuse
   const vec3 Ms = vec3(1, 1, 1);        // specular
 
@@ -187,7 +196,7 @@ vec3 getLight(vec3 rayOrigin, vec3 rayDirection) {
 
 void main() {
   // model space
-  vec3 rayOrigin = vec3(WORLD_SIZE * 0.5, WORLD_SIZE * 0.5, time);
+  vec3 rayOrigin = vec3(WORLD_SIZE * 0.5, WORLD_SIZE, 3.0 * time);
   vec3 rayDirection = normalize(vec3(fragPosition, 1));
 
   vec3 color = getLight(rayOrigin, rayDirection);
