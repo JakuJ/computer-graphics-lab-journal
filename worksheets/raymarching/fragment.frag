@@ -1,6 +1,6 @@
 #define MAX_STEPS 50
-#define MAX_DIST 500.0
-#define SURF_DIST 0.05
+#define MAX_DIST 50.0
+#define SURF_DIST 0.1
 #define WORLD_SIZE 10.0
 
 precision highp float;
@@ -125,7 +125,7 @@ vec3 getNormal(vec3 p) {
 }
 
 vec3 getLightPosition(vec3 rayOrigin) {
-  return rayOrigin + WORLD_SIZE * vec3(0, 0.5, 0);
+  return rayOrigin + WORLD_SIZE * vec3(sin(time), 0.5, cos(time));
 }
 
 vec3 getLight(vec3 rayOrigin, vec3 rayDirection, out vec3 point) {
@@ -200,6 +200,7 @@ void main() {
   vec3 point;
   vec3 color = getLight(rayOrigin, rayDirection, point);
 
+  // first reflection
   if (getDistance(point) < SURF_DIST) {
     vec3 refl = normalize(reflect(rayDirection, getNormal(point)));
     vec3 point2;
@@ -207,7 +208,18 @@ void main() {
     if (useAttenuation) {
       color2 *= exp(-attenuationCoefficient * length(rayOrigin - point));
     }
-    color += color2;
+    color += 0.5 * color2;
+
+    // second reflection
+    if (getDistance(point2) < SURF_DIST) {
+      vec3 refl2 = normalize(reflect(refl, getNormal(point2)));
+      vec3 point3;
+      vec3 color3 = getLight(point2 + 2.0 * refl2 * SURF_DIST, refl2, point3);
+      if (useAttenuation) {
+        color3 *= exp(-attenuationCoefficient * length(point - point2));
+      }
+      color += 0.25 * color3;
+    }
   }
 
   gl_FragColor = vec4(color, 1);
