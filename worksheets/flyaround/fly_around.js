@@ -68,6 +68,7 @@ function context() {
     }
 
     var camera = new SimpleCamera(vec3(0, 0, 0), -45, 0, 500, canvas);
+    camera.speed *= 10;
 
     function render() {
         // background
