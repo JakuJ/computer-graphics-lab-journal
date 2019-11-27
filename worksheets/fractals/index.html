@@ -54,15 +54,15 @@
         </tr>
         <tr>
             <td>K_glow &nbsp; &nbsp; &nbsp;</td>
-            <td><input id="kg" name="kg" type="range" min="0" max="1" step="0.01" value="0.2" /></td>
+            <td><input id="kg" name="kg" type="range" min="0" max="1" step="0.01" value="0.7" /></td>
         </tr>
         <tr>
             <td>Glow radius &nbsp; &nbsp; &nbsp;</td>
-            <td><input id="glowRadius" name="glowRadius" type="range" min="0" max="10" step="0.01" value="0" /></td>
+            <td><input id="glowRadius" name="glowRadius" type="range" min="0" max="10" step="0.01" value="10" /></td>
         </tr>
         <tr>
             <td>K_diffuse &nbsp; &nbsp; &nbsp;</td>
-            <td><input id="kd" name="kd" type="range" min="0" max="1" step="0.01" value="0.4" /></td>
+            <td><input id="kd" name="kd" type="range" min="0" max="1" step="0.01" value="0" /></td>
         </tr>
         <tr>
             <td>K_specular &nbsp; &nbsp; &nbsp;</td>
@@ -78,19 +78,19 @@
         </tr>
         <tr>
             <td>Distance attenuation &nbsp; &nbsp; &nbsp;</td>
-            <td><input id="attenuation" name="attenuation" type="checkbox" /></td>
+            <td><input id="attenuation" name="attenuation" type="checkbox" checked/></td>
         </tr>
         <tr>
             <td> Attenuation coeff. &nbsp; &nbsp; &nbsp;</td>
             <td><input id="attenuationCoefficient" name="attenuationCoefficient" type="range" min="0" max="0.1"
-                    step="0.001" value="0.005"></td>
+                    step="0.001" value="0.1"></td>
         </tr>
         <tr>
             <td>Bounding box check &nbsp; &nbsp; &nbsp;</td>
             <td><select id="boundMode" name="boundMode">
-                    <option value="0">None</option>
+                    <option value="0" selected>None</option>
                     <option value="1">Raytraced</option>
-                    <option value="2" selected>Raymarched</option>
+                    <option value="2">Raymarched</option>
                 </select>
             </td>
         </tr>
@@ -101,7 +101,6 @@
     </script>
     <script type="text/javascript" src="../../common/initShaders2.js"></script>
     <script type="text/javascript" src="../../common/MV.js"></script>
-    <script type="text/javascript" src="../../common/simple_camera.js"></script>
     <script type="text/javascript" src="./main.js"></script>
 </body>
 

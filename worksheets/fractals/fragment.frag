@@ -1,11 +1,10 @@
-#define MAX_STEPS 1000
-#define MAX_DIST 100.0
-#define SURF_DIST 0.0001
-#define WORLD_SIZE 10.0
+#define MAX_STEPS 100
+#define SURF_DIST 0.001
 #define SPONGE_SIZE 2.0
+#define WORLD_SIZE 6.0
+#define MAX_DIST 100.0
 #define REFLECTIONS 0
 #define BACKGROUND vec3(0)
-#define REPEATED 0
 
 precision highp float;
 
@@ -28,9 +27,11 @@ uniform int boundMode;
 // HELPER FUNCTIONS
 
 // float modulo
-vec3 vecMod(vec3 point, float boxSize) {
-  vec3 base = floor(point / boxSize + 0.5);
-  return point - boxSize * base;
+vec3 vecMod(vec3 point) {
+  const vec3 repetitions = vec3(1, 0, 0);
+  vec3 base = floor(point / WORLD_SIZE + 0.5);
+
+  return point - WORLD_SIZE * clamp(base, -repetitions, repetitions);
 }
 
 // TRANSFORMATION MATRICES
@@ -53,37 +54,7 @@ mat4 rotate(vec3 axis, float angle) {
       oc * axis.z * axis.z + c, 0.0, 0.0, 0.0, 0.0, 1.0);
 }
 
-// ALGEBRA OF SHAPES
-
-float opUnion(float d1, float d2) { return min(d1, d2); }
-
-float opSubtraction(float d1, float d2) { return max(-d1, d2); }
-
-float opIntersection(float d1, float d2) { return max(d1, d2); }
-
-float opSmoothUnion(float d1, float d2, float k) {
-  float h = clamp(0.5 + 0.5 * (d2 - d1) / k, 0.0, 1.0);
-  return mix(d2, d1, h) - k * h * (1.0 - h);
-}
-
-float opSmoothSubtraction(float d1, float d2, float k) {
-  float h = clamp(0.5 - 0.5 * (d2 + d1) / k, 0.0, 1.0);
-  return mix(d2, -d1, h) + k * h * (1.0 - h);
-}
-
-float opSmoothIntersection(float d1, float d2, float k) {
-  float h = clamp(0.5 - 0.5 * (d2 - d1) / k, 0.0, 1.0);
-  return mix(d2, d1, h) + k * h * (1.0 - h);
-}
-
 // DISTANCE ESTIMATORS
-
-float de_sphere(vec3 point, float radius) { return length(point) - radius; }
-
-float de_box2D(vec2 point, vec2 bounds) {
-  vec2 d = abs(point) - bounds;
-  return length(max(d, 0.0)) + min(max(d.x, d.y), 0.0);
-}
 
 float de_box3D(vec3 point, vec3 bounds) {
   vec3 q = abs(point) - bounds;
@@ -113,10 +84,8 @@ vec2 boxIntersection(vec3 ro, vec3 rd, vec3 boxSize, out vec3 outNormal) {
 // SCENE DISTANCE FUNCTION
 
 vec4 distanceField(vec3 point) {
-// Modulo repeated world
-#if REPEATED
-  point = vecMod(point, WORLD_SIZE);
-#endif
+  // Modulo repeated world
+  point = vecMod(point);
 
   // Menger sponge
   float d = de_box3D(point, vec3(SPONGE_SIZE));
@@ -160,9 +129,8 @@ float sceneBoundsRT(vec3 rayOrigin, vec3 rayDirection) {
 }
 
 float boundsField(vec3 point) {
-#if REPEATED
-  point = vecMod(point, WORLD_SIZE);
-#endif
+  point = vecMod(point);
+
   vec3 boxSize = vec3(SPONGE_SIZE + glowRadius);
   return de_box3D(point, boxSize);
 }
@@ -357,9 +325,7 @@ vec3 getLight(vec3 rayOrigin, vec3 rayDirection, out vec3 point) {
 void main() {
   // model space
   mat4 modelView = rotate(vec3(0, 1, 0), time) *
-                   translate(vec3(0, 0, -4)); // orbiting the center
-  // mat4 modelView = translate(vec3(WORLD_SIZE / 2.0, 0, 50.0 * time)); //
-  // zoooooooom
+                   translate(vec3(0, 0, -(WORLD_SIZE + 2.0 * SPONGE_SIZE))); // orbiting the center
 
   vec3 rayOrigin = (modelView * vec4(0, 0, 0, 1)).xyz;
   vec3 rayDirection = normalize(modelView * vec4(fragPosition, 1, 0)).xyz;

@@ -22,6 +22,13 @@ body {
   text-transform: uppercase;
 }
 
+.horizontalLine {
+  text-align: center;
+  font-size: 1rem;
+  text-transform: uppercase;
+  padding: 5vh 0px;
+}
+
 h1,
 h2,
 h3 {
@@ -32,9 +39,17 @@ h3 {
   display: block;
   position: relative;
   overflow: hidden;
-  width: 530px;
   height: 265px;
-  margin: auto auto 1rem;
+  margin: 1rem 1rem;
+}
+
+a {
+  display: block;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
+}
+
+.finalProject {
+  margin: 0 auto;
 }
 
 .worksheet-item .caption {
@@ -71,46 +86,48 @@ h3 {
   object-fit: cover;
 }
 
-@media (min-width: 992px) {
-  .worksheet-item .caption {
-    -webkit-transition: -webkit-clip-path 0.25s ease-out, background-color 0.7s;
-    -webkit-clip-path: inset(0px);
-    clip-path: inset(0px);
-  }
-  .worksheet-item .caption .caption-content {
-    -webkit-transition: opacity 0.25s;
-    transition: opacity 0.25s;
-    margin-left: 5rem;
-    margin-right: 5rem;
-    margin-bottom: 5rem;
-  }
-  .worksheet-item img {
-    -webkit-transition: -webkit-clip-path 0.25s ease-out;
-    -webkit-clip-path: inset(-1px);
-    clip-path: inset(-1px);
-  }
-  .worksheet-item:hover img {
-    -webkit-clip-path: inset(2rem);
-    clip-path: inset(2rem);
-  }
-  .worksheet-item:hover .caption {
-    background-color: rgba(29, 128, 159, 0.9);
-    -webkit-clip-path: inset(2rem);
-    clip-path: inset(2rem);
-  }
+.worksheet-item {
+  transition: -webkit-clip-path 0.25s ease-out, background-color 0.7s;
+  -webkit-transition: -webkit-clip-path 0.25s ease-out, background-color 0.7s;
+  clip-path: inset(0px);
+  -webkit-clip-path: inset(0px);
+}
+
+.worksheet-item .caption {
+  transition: -webkit-clip-path 0.25s ease-out, background-color 0.7s;
+  -webkit-transition: -webkit-clip-path 0.25s ease-out, background-color 0.7s;
+  clip-path: inset(0px);
+  -webkit-clip-path: inset(0px);
+}
+
+.worksheet-item .caption .caption-content {
+  transition: opacity 0.25s;
+  -webkit-transition: opacity 0.25s;
+  margin-left: 5rem;
+  margin-right: 5rem;
+  margin-bottom: 5rem;
+}
+
+.worksheet-item img {
+  transition: -webkit-clip-path 0.25s ease-out;
+  -webkit-transition: -webkit-clip-path 0.25s ease-out;
+  clip-path: inset(-1px);
+  -webkit-clip-path: inset(-1px);
+}
+
+.worksheet-item:hover img {
+  clip-path: inset(2rem);
+  -webkit-clip-path: inset(2rem);
+}
+
+.worksheet-item:hover .caption {
+  clip-path: inset(2rem);
+  -webkit-clip-path: inset(2rem);
 }
 
 footer.footer {
   padding-top: 5rem;
   padding-bottom: 5rem;
-}
-
-a {
-  color: #1D809F;
-}
-
-a:hover, a:focus, a:active {
-  color: #155d74;
 }
 
 .text-secondary {
