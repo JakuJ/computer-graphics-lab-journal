@@ -35,7 +35,7 @@ function context() {
     // one-time send data to vertex shader
     {
         let uLocation = gl.getUniformLocation(program, "aspectRatio");
-        gl.uniform1f(uLocation, 1.6);
+        gl.uniform1f(uLocation, canvas.width / canvas.height);
     }
 
     // FPS counter

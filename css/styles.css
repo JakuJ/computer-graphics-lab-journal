@@ -116,13 +116,13 @@ a {
 }
 
 .worksheet-item:hover img {
-  clip-path: inset(2rem);
-  -webkit-clip-path: inset(2rem);
+  clip-path: inset(1rem);
+  -webkit-clip-path: inset(1rem);
 }
 
 .worksheet-item:hover .caption {
-  clip-path: inset(2rem);
-  -webkit-clip-path: inset(2rem);
+  clip-path: inset(1rem);
+  -webkit-clip-path: inset(1rem);
 }
 
 footer.footer {
