@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Ray Marching</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="Jakub Janaszkiewicz">
+    <link rel="stylesheet" href="../../vendor/bootstrap/css/bootstrap.min.css">
+    <style>
+        html,
+        body,
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        .panels {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: auto;
+            background: transparent;
+            color: white;
+        }
+
+        #FPScounter {
+            position: fixed;
+            top: 0px;
+            right: 20px;
+            color: white;
+            font-size: x-large;
+        }
+
+        input[type="range"]::-webkit-slider-runnable-track {
+            cursor: pointer;
+            background-image: linear-gradient(to left,
+                    rgba(75, 198, 125, 0.5) 30%,
+                    rgba(241, 196, 15, 0.5) 45%,
+                    rgba(228, 53, 50, 0.5) 99%);
+            border-radius: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="canvas1">Please use a browser supporting HTML5</canvas>
+    <div id="FPScounter">60</div>
+    <table class="panels">
+        <tr>
+            <td>K_ambient &nbsp; &nbsp; &nbsp;</td>
+            <td><input id="ka" name="ka" type="range" min="0" max="1" step="0.01" value="0" /></td>
+        </tr>
+        <tr>
+            <td>K_glow &nbsp; &nbsp; &nbsp;</td>
+            <td><input id="kg" name="kg" type="range" min="0" max="1" step="0.01" value="0.2" /></td>
+        </tr>
+        <tr>
+            <td>Glow radius &nbsp; &nbsp; &nbsp;</td>
+            <td><input id="glowRadius" name="glowRadius" type="range" min="0" max="10" step="0.01" value="0" /></td>
+        </tr>
+        <tr>
+            <td>K_diffuse &nbsp; &nbsp; &nbsp;</td>
+            <td><input id="kd" name="kd" type="range" min="0" max="1" step="0.01" value="0.4" /></td>
+        </tr>
+        <tr>
+            <td>K_specular &nbsp; &nbsp; &nbsp;</td>
+            <td><input id="ks" name="ks" type="range" min="0" max="1" step="0.01" value="0" /></td>
+        </tr>
+        <tr>
+            <td>Shininess &nbsp; &nbsp; &nbsp;</td>
+            <td><input id="shininess" name="shininess" type="range" min="1" max="20" step="1" value="20" /></td>
+        </tr>
+        <tr>
+            <td>Shadows &nbsp; &nbsp; &nbsp;</td>
+            <td><input id="shadows" name="shadows" type="checkbox" /></td>
+        </tr>
+        <tr>
+            <td>Distance attenuation &nbsp; &nbsp; &nbsp;</td>
+            <td><input id="attenuation" name="attenuation" type="checkbox" /></td>
+        </tr>
+        <tr>
+            <td> Attenuation coeff. &nbsp; &nbsp; &nbsp;</td>
+            <td><input id="attenuationCoefficient" name="attenuationCoefficient" type="range" min="0" max="0.1"
+                    step="0.001" value="0.005"></td>
+        </tr>
+        <tr>
+            <td>Bounding box check &nbsp; &nbsp; &nbsp;</td>
+            <td><select id="boundMode" name="boundMode">
+                    <option value="0">None</option>
+                    <option value="1">Raytraced</option>
+                    <option value="2" selected>Raymarched</option>
+                </select>
+            </td>
+        </tr>
+    </table>
+    </div>
+    </div>
+    <script type="text/javascript" src="../../common/webgl-utils.js">
+    </script>
+    <script type="text/javascript" src="../../common/initShaders2.js"></script>
+    <script type="text/javascript" src="../../common/MV.js"></script>
+    <script type="text/javascript" src="../../common/simple_camera.js"></script>
+    <script type="text/javascript" src="./main.js"></script>
+</body>
+
+</html>
