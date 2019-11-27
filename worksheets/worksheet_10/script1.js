@@ -84,7 +84,7 @@ function context() {
     program.a_Color = gl.getAttribLocation(program, 'a_Color');
 
     var model = initVertexBuffers(gl, program);
-    readOBJFile('/worksheets/worksheet_10/teapot/teapot.obj', 1, false);
+    readOBJFile('./teapot/teapot.obj', 1, false);
 
     //Event handlers
     var dragging = false;
