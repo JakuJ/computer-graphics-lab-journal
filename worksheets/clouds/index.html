@@ -41,7 +41,15 @@
     <table class="panels">
         <tr>
             <td>Noise scale &nbsp; &nbsp; &nbsp;</td>
-            <td><input id="scale" type="range" min="0.1" max="5" step="0.1" value="1" /></td>
+            <td><input id="scale" type="range" min="0.01" max="3" step="0.01" value="1" /></td>
+        </tr>
+        <tr>
+            <td>Density threshold &nbsp; &nbsp; &nbsp;</td>
+            <td><input id="threshold" type="range" min="0" max="1" step="0.01" value="0" /></td>
+        </tr>
+        <tr>
+            <td>Density multiplier &nbsp; &nbsp; &nbsp;</td>
+            <td><input id="multiplier" type="range" min="0" max="20" step="0.1" value="1" /></td>
         </tr>
     </table>
     <script type="text/javascript" src="../../common/webgl-utils.js">
