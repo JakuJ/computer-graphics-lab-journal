@@ -1,7 +1,7 @@
 #define STEPS 3
 #define LIGHT_STEPS 3
 #define BACKGROUND vec3(0.53, 0.81, 1.0)
-#define CLOUD_COL vec3(1, 1, 1)
+#define CLOUD_COL vec3(0.7, 0.7, 0.7)
 
 precision highp float;
 
