@@ -39,7 +39,8 @@ function context() {
         gl.uniform1f(location, canvas.width / canvas.height);
     }
 
-    const variables = ['scale', 'threshold', 'multiplier'];
+    const variables = ['scale', 'threshold', 'multiplier', 'lightAbsorptionTowardsSun', 'lightAbsorptionThroughCloud', 'darknessThreshold'];
+    const ticks = ['useLight', 'lookDown'];
 
     function render(time) {
         // background
@@ -56,6 +57,12 @@ function context() {
             let location = gl.getUniformLocation(mainProgram, x);
             gl.uniform1f(location, val);
         });
+
+        ticks.forEach(x => {
+            let val = document.getElementById(x).checked;
+            let location = gl.getUniformLocation(mainProgram, x);
+            gl.uniform1i(location, val);
+        })
 
 
         gl.drawArrays(gl.TRIANGLE_FAN, 0, vertices.length);

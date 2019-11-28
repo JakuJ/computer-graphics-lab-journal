@@ -41,15 +41,35 @@
     <table class="panels">
         <tr>
             <td>Noise scale &nbsp; &nbsp; &nbsp;</td>
-            <td><input id="scale" type="range" min="0.01" max="3" step="0.01" value="1" /></td>
+            <td><input id="scale" type="range" min="0.01" max="1" step="0.01" value="0.8" /></td>
         </tr>
         <tr>
             <td>Density threshold &nbsp; &nbsp; &nbsp;</td>
-            <td><input id="threshold" type="range" min="0" max="1" step="0.01" value="0" /></td>
+            <td><input id="threshold" type="range" min="0" max="1" step="0.01" value="0.45" /></td>
         </tr>
         <tr>
             <td>Density multiplier &nbsp; &nbsp; &nbsp;</td>
-            <td><input id="multiplier" type="range" min="0" max="20" step="0.1" value="1" /></td>
+            <td><input id="multiplier" type="range" min="0" max="1" step="0.001" value="0.5" /></td>
+        </tr>
+        <tr>
+            <td>Absorption towards sun &nbsp; &nbsp; &nbsp;</td>
+            <td><input id="lightAbsorptionTowardsSun" type="range" min="0" max="100" step="0.1" value="10" /></td>
+        </tr>
+        <tr>
+            <td>Absorption through cloud &nbsp; &nbsp; &nbsp;</td>
+            <td><input id="lightAbsorptionThroughCloud" type="range" min="0" max="2" step="0.01" value="1.0" /></td>
+        </tr>
+        <tr>
+            <td>Darkness threshold &nbsp; &nbsp; &nbsp;</td>
+            <td><input id="darknessThreshold" type="range" min="0" max="1" step="0.01" value="0" /></td>
+        </tr>
+        <tr>
+            <td>Simulate light &nbsp; &nbsp; &nbsp;</td>
+            <td><input id="useLight" name="attenuation" type="checkbox" checked/></td>
+        </tr>
+        <tr>
+            <td>Look up/down &nbsp; &nbsp; &nbsp;</td>
+            <td><input id="lookDown" name="attenuation" type="checkbox" checked /></td>
         </tr>
     </table>
     <script type="text/javascript" src="../../common/webgl-utils.js">
