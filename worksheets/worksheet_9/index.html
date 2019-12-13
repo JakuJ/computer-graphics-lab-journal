@@ -114,7 +114,7 @@
                         <div>Bounce <input id="bounce2" type="checkbox" checked /></div>
                         <div>Look down <input id="lookDown2" type="checkbox" /></div>
                         <div>Move light <input id="lightMove2" type="checkbox" checked /></div>
-                        <div>See from light's perspective <input id="seeLight" type="checkbox" /></div>
+                        <div>See depth map <input id="seeLight" type="checkbox" /></div>
                     </div>
                 </td>
             </tr>
@@ -237,23 +237,30 @@
         uniform mat4 perspectiveMatrix;
 
         varying vec3 fPosition;
+        varying vec4 fWorldPosition;
+        varying vec3 fNormal;
         varying vec4 fColor;
 
         void main() {
             fPosition = position;
+            fWorldPosition = modelView * vec4(position, 1);
+            fNormal = normal;
             fColor = color;
             
-            gl_Position = perspectiveMatrix * modelView * vec4(position, 1);
+            gl_Position = perspectiveMatrix * fWorldPosition;
         }
     </script>
     <script id="fragment-shader-teapot-2" type="x-shader/x-fragment">
         precision highp float;
         
         varying vec3 fPosition;
+        varying vec4 fWorldPosition;
+        varying vec3 fNormal;
         varying vec4 fColor;
 
         uniform mat4 lightModelView;
         uniform mat4 lightPerspective;
+        uniform vec3 lightPosition;
 
         uniform sampler2D shadow;
 
@@ -264,7 +271,12 @@
             float depth = rgbaDepth.r;
             float visibility = (shadowCoord.z > depth + 0.005) ? 0.5 : 1.0;
 
-            gl_FragColor = vec4(fColor.rgb * visibility, fColor.a);
+            // lambertian term
+            vec3 L = normalize(lightPosition - fWorldPosition.xyz);
+            float c = max(0.0, dot(fNormal.xyz, L));
+
+            //gl_FragColor = vec4(vec3(c), fColor.a);
+            gl_FragColor = vec4(vec3(c) * visibility, fColor.a);
         }
     </script>
 
@@ -282,7 +294,7 @@
         precision highp float;
 
         void main() {
-            gl_FragColor = vec4(gl_FragCoord.z, 0.0, 0.0, 1.0);
+            gl_FragColor = vec4(vec3(gl_FragCoord.z), 1.0);
         }
     </script>
 

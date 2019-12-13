@@ -252,47 +252,64 @@
                     <ol>
                         <li>
                             The term "Phong lighting" refers to a reflection model.
-                            It describes the way a surface reflects light, taking into consideration three major components -
-                            ambient, diffuse and specular. The diffuse component models rough surfaces and the specular component
+                            It describes the way a surface reflects light, taking into consideration three major
+                            components -
+                            ambient, diffuse and specular. The diffuse component models rough surfaces and the specular
+                            component
                             models shiny ones.
 
                             The term "Phong shading" is an interpolation technique for surface shading.
-                            It interpolates surface normals across rasterized polygons, allowing us to compute pixel colors 
+                            It interpolates surface normals across rasterized polygons, allowing us to compute pixel
+                            colors
                             based on the interpolated normals and a reflection model.
                         </li><br>
                         <li>
                             In flat shading, every fragment belonging to the polygon gets the same color,
-                            since the basis for the calculation is just the angle between the polygon and the light source.
+                            since the basis for the calculation is just the angle between the polygon and the light
+                            source.
                             The resulting shading is not smooth, and grid-like patterns can emerge if shaded
-                            surfaces are not very dense. This model allows for high computationally efficiency however, since there is no
+                            surfaces are not very dense. This model allows for high computationally efficiency however,
+                            since there is no
                             interpolation taking place.
                             <br><br>
-                            Gouraud shading interpolates lighting values calculated for every vertex (as opposed to interpolating surface normals
-                            as in Phong shading). This results in a rather smooth shading (no sudden changes in color between polygons like in flat
+                            Gouraud shading interpolates lighting values calculated for every vertex (as opposed to
+                            interpolating surface normals
+                            as in Phong shading). This results in a rather smooth shading (no sudden changes in color
+                            between polygons like in flat
                             shading). However, lighting is not very realistic unless large amounts of vertices are used.
-                            It can be considered "middle ground" between flat and Phong shading, offering better quality then flat shading, while
+                            It can be considered "middle ground" between flat and Phong shading, offering better quality
+                            then flat shading, while
                             also being much cheaper to compute then Phong shading.
                             <br><br>
-                            Phong shading offers the most realistic results of the three, but also comes with the highest computational
-                            overhead - since we interpolate surface normals, the lighting calculations take place in the fragment
+                            Phong shading offers the most realistic results of the three, but also comes with the
+                            highest computational
+                            overhead - since we interpolate surface normals, the lighting calculations take place in the
+                            fragment
                             shader and thus, have to be done for each pixel.
                         </li><br>
                         <li>
-                            With a directional light, the light vector has the same value for every vertex, simplifying calculations.
+                            With a directional light, the light vector has the same value for every vertex, simplifying
+                            calculations. It is meant to simulate light coming from the sun or other distant light
+                            sources. Point light on the other hand allows us to take distance into account during the
+                            rendering.
                         </li><br>
                         <li>
-                            The eye position matters when simulating highlight - the specular element in the Phong reflection model
-                            takes into consideration camera's position, so it can simulate light being reflected into the eye of the camera.
+                            The eye position matters when simulating highlight - the specular element in the Phong
+                            reflection model
+                            takes into consideration camera's position, so it can simulate light being reflected into
+                            the eye of the camera.
                         </li><br>
                         <li>
-                            This disables the specular component, resulting in only ambient and diffuse lighting being applied.
+                            This disables the specular component, resulting in only ambient and diffuse lighting being
+                            applied.
                         </li><br>
                         <li>
-                            Increasing the exponent reduces the brightness of the specular term, while also reducing the radii of
+                            Increasing the exponent reduces the brightness of the specular term, while also reducing the
+                            radii of
                             highlight points.
                         </li><br>
                         <li>
-                            I have calculated the lighting in camera view space.
+                            I have calculated the lighting in camera view (eye coordinate) space.
                         </li>
                     </ol>
                 </td>

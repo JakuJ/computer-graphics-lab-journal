@@ -63,15 +63,6 @@
                     Create buttons and/or selection menus that enable you to switch between different texture wrapping
                     modes (repeat or clamp-to-edge) and different texture filtering modes (nearest, linear, mipmap).
                     [Angel 3.6, 7.5.3, 7.5.4]
-                    <br><br>
-                    Explain the effect of the different filtering modes and their influence on texture magnification and
-                    minification issues.
-                    <br><br>
-                    -----------
-                    <br><br>
-                    <b>ANSWER</b>
-                    <br><br>
-                    TODO
                 </td>
                 <td>
                     <canvas id="canvas1" width="512" height="512">Please use a browser supporting HTML5</canvas>
@@ -130,11 +121,11 @@
                             Explain your choice. [Angel 7.5.4]
                         </li>
                     </ul>
-                    -----------
-                    <br><br>
                     <b>ANSWER</b>
                     <br><br>
-                    TODO
+                    My choice was to use the linear filtering since it gives a bit smoother texture than using the
+                    nearest value. I could've also generated mipmaps for the
+                    texture, but it this results in a slightly lower resolution.
                 </td>
                 <td>
                     <canvas id="canvas3" width="512" height="512">Please use a browser supporting HTML5</canvas>
@@ -143,6 +134,36 @@
                         <button id="increase_subdivision3" class="btn btn-success">Increase</button>
                         <button id="decrease_subdivision3" class="btn btn-warning">Decrease</button>
                     </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <h3>Part 2 - answers</h3>
+                    Explain the effect of the different filtering modes and their influence on texture magnification and
+                    minification issues.
+                    <br><br>
+                    <b>ANSWER</b><br><br>
+                    Everything boils down to how we draw pixels corresponding to texels that are smaller or bigger than
+                    them. We have three ways to do so:
+                    <br><br>
+                    <b>gl.NEAREST</b><br>
+                    Valid for both minification and magnification and the simplest of methods.
+                    Unfortunately, there are many potential artifacts that can happen when using this technique.
+                    It can result in aliasing, "blockiness" of the texture during magnification and shimmering
+                    during minification. Using this with lines or other straight edges results in awful aliasing
+                    effects.
+                    <br><br>
+                    <b>gl.LINEAR</b><br>
+                    Again, valid for both problems. Gives smoother, interpolated results, although
+                    Moire patters can still occur. One downside is that it can sometimes result in colors that
+                    are not present in the texture due to interpolation – example being gray in out
+                    checkerboard.
+                    <br><br>
+                    <b>Mipmaps</b><br>
+                    Mipmaps can be generated from the original texture and to be used for minification. They are only
+                    available for textures which dimensions are squares with a side being a power of two (as of WebGL
+                    1.0). This family of methods is capable of reducing aliasing and shimmering with better results, but
+                    can not eliminate all artifacts.
                 </td>
             </tr>
         </tbody>

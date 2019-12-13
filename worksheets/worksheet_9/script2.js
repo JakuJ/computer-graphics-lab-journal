@@ -33,8 +33,6 @@ function initFramebufferObject(gl) {
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, shadowSize, shadowSize, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAX_FILTER, gl.LINEAR);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
     framebuffer.texture = texture;
 
     depthBuffer = gl.createRenderbuffer();
@@ -180,11 +178,13 @@ function context() {
         gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, image);
 
+        gl.generateMipmap(gl.TEXTURE_2D);
+
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
 
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR_MIPMAP_LINEAR);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
 
         window.requestAnimationFrame(render);
     };
@@ -230,8 +230,8 @@ function context() {
         let lightX, lightZ;
 
         if (lightMove) {
-            lightX = Math.sin(t);
-            lightZ = -3 + Math.cos(t);
+            lightX = 2 * Math.sin(t);
+            lightZ = -3 + 2 * Math.cos(t);
         } else {
             lightX = 0;
             lightZ = -2.999;
@@ -260,7 +260,7 @@ function context() {
             gl.viewport(0, 0, shadowSize, shadowSize);
         }
         gl.bindFramebuffer(gl.FRAMEBUFFER, seeLight ? null : fb);
-        gl.clearColor(0, 0, 0, 1.0);
+        gl.clearColor(1.0, 1.0, 1.0, 1.0);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
         gl.useProgram(shadowProgram);
@@ -306,13 +306,14 @@ function context() {
             }
 
             gl.drawElements(gl.TRIANGLES, g_drawingInfo.indices.length, gl.UNSIGNED_SHORT, 0);
-
+            
             // RENDER THE TEAPOT
             gl.viewport(0, 0, canvas.clientWidth, canvas.clientHeight);
             gl.bindFramebuffer(gl.FRAMEBUFFER, null);
             gl.useProgram(teapotProgram);
 
             initAttributeVariable(gl, teapotProgram.position, teapotModel.vertexBuffer, 3);
+            initAttributeVariable(gl, teapotProgram.normal, teapotModel.normalBuffer, 3);
             initAttributeVariable(gl, teapotProgram.color, teapotModel.colorBuffer, 4);
             gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, teapotModel.indexBuffer);
 
@@ -328,6 +329,9 @@ function context() {
             } {
                 let uLocation = gl.getUniformLocation(teapotProgram, 'lightPerspective');
                 gl.uniformMatrix4fv(uLocation, false, flatten(lightPerspective));
+            } {
+                let uLocation = gl.getUniformLocation(teapotProgram, 'lightPosition');
+                gl.uniform3f(uLocation, lightX, lightY, lightZ);
             }
 
             if (!seeLight) {
@@ -368,6 +372,8 @@ function context() {
     }
 
     gl.enable(gl.DEPTH_TEST);
+    // disabled to stop light from going through the bottom
+    // gl.enable(gl.CULL_FACE);
 }
 
 context()
