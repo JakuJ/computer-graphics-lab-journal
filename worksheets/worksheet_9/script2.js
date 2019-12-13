@@ -21,6 +21,8 @@ function initAttributeVariable(gl, a_attribute, buffer, num) {
     gl.enableVertexAttribArray(a_attribute);
 }
 
+const shadowSize = 1024;
+
 function initFramebufferObject(gl) {
     var framebuffer, texture, depthBuffer;
 
@@ -28,16 +30,16 @@ function initFramebufferObject(gl) {
 
     texture = gl.createTexture();
     gl.bindTexture(gl.TEXTURE_2D, texture);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 512, 512, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, shadowSize, shadowSize, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAX_FILTER, gl.LINEAR);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
     framebuffer.texture = texture;
 
     depthBuffer = gl.createRenderbuffer();
     gl.bindRenderbuffer(gl.RENDERBUFFER, depthBuffer);
-    gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_COMPONENT16, 512, 512);
+    gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_COMPONENT16, shadowSize, shadowSize);
 
     gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer);
     gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture, 0);
@@ -112,6 +114,7 @@ function context() {
     teapotProgram.color = gl.getAttribLocation(teapotProgram, 'color');
     teapotProgram.normal = gl.getAttribLocation(teapotProgram, 'normal');
     teapotProgram.shadow = gl.getUniformLocation(teapotProgram, 'shadow');
+    gl.uniform1i(teapotProgram.shadow, 1);
 
     var teapotModel = {
         vertexBuffer: createEmptyArrayBuffer(gl, teapotProgram.position, 3, gl.FLOAT),
@@ -215,14 +218,14 @@ function context() {
 
     // Projection shadow matrix
 
-    let lightY = 2;
+    let lightY = 3;
 
     function render(time) {
         // background
         gl.clearColor(0.53, 0.81, 1.0, 1.0);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-        // light
+        // light updates
         let t = time / 1000;
         let lightX, lightZ;
 
@@ -236,7 +239,7 @@ function context() {
 
         // common perspective + lookAt
         let cameraPerspective = [
-            perspective(90, 1, 1, 20),
+            perspective(90, 1, 0.1, 20),
             lookAt(lookDown ? vec3(0, 2, -2.99) : vec3(0, 0, 0), vec3(0, 0, -3), vec3(0, 1, 0)),
         ].reduce(mult);
 
@@ -246,13 +249,16 @@ function context() {
         ].reduce(mult);
 
         // teapot model view matrix
-        let transY = bounce ? 0.25 * Math.cos(t) : 0;
+        let transY = bounce ? 0.5 * Math.cos(t) : 0;
         var teapotModelView = [
             translate(0, transY, -3),
             scalem(0.25, 0.25, 0.25)
         ].reduce(mult);
 
         // RENDER GROUND SHADOW
+        if(!seeLight){
+            gl.viewport(0, 0, shadowSize, shadowSize);
+        }
         gl.bindFramebuffer(gl.FRAMEBUFFER, seeLight ? null : fb);
         gl.clearColor(0, 0, 0, 1.0);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -283,8 +289,10 @@ function context() {
             console.log('waiting');
         } else {
             // RENDER SHADOW MAP
+            if(!seeLight){
+                gl.viewport(0, 0, shadowSize, shadowSize);
+            }
             gl.bindFramebuffer(gl.FRAMEBUFFER, seeLight ? null : fb);
-
             gl.useProgram(shadowProgram);
             initAttributeVariable(gl, shadowProgram.position, teapotModel.vertexBuffer, 3);
             gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, teapotModel.indexBuffer);
@@ -300,10 +308,11 @@ function context() {
             gl.drawElements(gl.TRIANGLES, g_drawingInfo.indices.length, gl.UNSIGNED_SHORT, 0);
 
             // RENDER THE TEAPOT
+            gl.viewport(0, 0, canvas.clientWidth, canvas.clientHeight);
             gl.bindFramebuffer(gl.FRAMEBUFFER, null);
             gl.useProgram(teapotProgram);
+
             initAttributeVariable(gl, teapotProgram.position, teapotModel.vertexBuffer, 3);
-            // initAttributeVariable(gl, teapotProgram.normal, teapotModel.normalBuffer, 3);
             initAttributeVariable(gl, teapotProgram.color, teapotModel.colorBuffer, 4);
             gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, teapotModel.indexBuffer);
 
@@ -327,6 +336,7 @@ function context() {
         };
 
         // RENDER GROUND
+        gl.viewport(0, 0, canvas.clientWidth, canvas.clientHeight);
         gl.bindFramebuffer(gl.FRAMEBUFFER, null);
         gl.useProgram(groundProgram);
 

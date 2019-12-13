@@ -163,7 +163,7 @@ function context() {
 
     // Projection shadow matrix
 
-    let lightY = 2;
+    let lightY = 3;
 
     let projectionMatrix = mat4(1);
     projectionMatrix[3][3] = 0;

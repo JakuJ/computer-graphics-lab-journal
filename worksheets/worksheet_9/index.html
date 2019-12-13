@@ -224,7 +224,6 @@
 
             vec4 origColor = texture2D(texture, fTexCoord);
             gl_FragColor = vec4(origColor.rgb * visibility, origColor.a);
-            //gl_FragColor = vec4(vec3(depth), 1);
         }
     </script>
 
@@ -259,15 +258,13 @@
         uniform sampler2D shadow;
 
         void main() {
-            vec4 origColor = vec4(1, 0, 0, 1);
-
             vec4 fPositionFromLight = lightPerspective * lightModelView * vec4(fPosition, 1);
             vec3 shadowCoord = (fPositionFromLight.xyz / fPositionFromLight.w) / 2.0 + 0.5;
             vec4 rgbaDepth = texture2D(shadow, shadowCoord.xy);
             float depth = rgbaDepth.r;
             float visibility = (shadowCoord.z > depth + 0.005) ? 0.5 : 1.0;
 
-            gl_FragColor = vec4(origColor.rgb * visibility, origColor.a);
+            gl_FragColor = vec4(fColor.rgb * visibility, fColor.a);
         }
     </script>
 
