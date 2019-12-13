@@ -118,6 +118,32 @@
                     </div>
                 </td>
             </tr>
+            <tr>
+                <td>
+                    <h3>Part 3</h3>
+                    Compare projection shadows to shadow mapping by listing advantages and disadvantages of the two
+                    techniques.
+                    <br><br>
+                    <b>Projection shadows</b><br>
+                    Pros: <br>
+                    + Easy to implement <br>
+                    + Computationally cheap <br>
+                    Cons: <br>
+                    - Only really suitable for projecting shadows into flat surfaces <br>
+                    - Controlling the shadow's color is limited <br>
+                    - Self-shadowing is not possible with this method <br>
+                    <br><br>
+                    <b>Shadow mapping</b><br>
+                    Pros: <br>
+                    + Self-shadowing is not a problem <br>
+                    + We can combine shadow and shadowed object's color to blend them any way we want <br>
+                    + Can be used to shapes of arbitrary complexity <br>
+                    Cons: <br>
+                    - Harder to implement (requires separate shaders and FBOs) <br>
+                    - Worse performance because of the intermediate texture <br>
+                    - All kinds of problems arising from the use of a texture (aliasing, shimmering...)
+                </td>
+            </tr>
         </tbody>
     </table>
 
