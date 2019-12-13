@@ -21,30 +21,6 @@ function initAttributeVariable(gl, a_attribute, buffer, num) {
     gl.enableVertexAttribArray(a_attribute);
 }
 
-function createChessboard() {
-    const texSize = 64;
-    const numRows = 8;
-    const numCols = 8;
-    const numComponents = 4;
-    let myImage = new Uint8Array(numComponents * texSize * texSize);
-
-    for (let i = 0; i < texSize; ++i) {
-        for (let j = 0; j < texSize; ++j) {
-            let patchx = Math.floor(i / (texSize / numRows));
-            let patchy = Math.floor(j / (texSize / numCols));
-            let c = (patchx % 2 !== patchy % 2 ? 255 : 0);
-
-            let index = numComponents * (i * texSize + j);
-            myImage[index + 0] = c;
-            myImage[index + 1] = c;
-            myImage[index + 2] = c;
-            myImage[index + 3] = 255;
-        }
-    }
-
-    return myImage;
-}
-
 function context() {
     var g_objDoc = null; // The information of OBJ file
     var g_drawingInfo = null; // The information for drawing 3D model
@@ -167,19 +143,19 @@ function context() {
 
     // INPUTS
 
-    const bounceCheck = document.getElementById("bounce");
+    const bounceCheck = document.getElementById("bounce1");
     bounceCheck.onchange = x => {
         bounce = bounceCheck.checked;
     };
     var bounce = bounceCheck.checked;
 
-    const lookDownCheck = document.getElementById("lookDown");
+    const lookDownCheck = document.getElementById("lookDown1");
     lookDownCheck.onchange = x => {
         lookDown = lookDownCheck.checked;
     };
     var lookDown = lookDownCheck.checked;
 
-    const lightMoveCheck = document.getElementById("lightMove");
+    const lightMoveCheck = document.getElementById("lightMove1");
     lightMoveCheck.onchange = x => {
         lightMove = lightMoveCheck.checked;
     };
@@ -260,7 +236,6 @@ function context() {
             var modelViewMatrix = [
                 translate(0, transY, -3),
                 scalem(0.25, 0.25, 0.25),
-                rotateY(time / 20),
             ].reduce(mult);
 
             // FIRST, THE SHADOWS

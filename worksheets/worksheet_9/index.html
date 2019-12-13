@@ -73,9 +73,48 @@
                 <td>
                     <canvas id="canvas1" width="512" height="512">Please use a browser supporting HTML5</canvas>
                     <div>
-                        <div>Bounce <input id="bounce" type="checkbox" checked /></div>
-                        <div>Look down <input id="lookDown" type="checkbox" /></div>
-                        <div>Move light <input id="lightMove" type="checkbox" checked /></div>
+                        <div>Bounce <input id="bounce1" type="checkbox" checked /></div>
+                        <div>Look down <input id="lookDown1" type="checkbox" /></div>
+                        <div>Move light <input id="lightMove1" type="checkbox" checked /></div>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <h3>Part 2</h3>
+                    Projection shadows have several shortcomings. A significant problem is missing self-shadowing.
+                    Shadow mapping solves most of these issues (but introduces other problems).
+                    <br><br>
+                    Your task is now to replace the projection shadows from Part 1 with shadow mapping. We recommend
+                    using the “Display Shadows” section of the WebGL programming guide. This text is available on File
+                    Sharing. There are two kinds of coordinate spaces used in this assignment: camera relative and light
+                    relative.
+                    <br><br>
+                    The basic steps are:
+                    <ul>
+                        <li>
+                            Render the scene from the point of view of the light source. Use a
+                            shader that draws fragment depth and use a framebuffer object (fbo) to render directly into
+                            a texture. The viewport might need adjustment when using the fbo. Bind the depth texture
+                            when drawing the ground plane to inspect the result, and use this inspection to set proper
+                            light view and light projection matrices. [Angel 5.11, 7.12]
+                        </li>
+                        <li>
+                            Use the rendered depth texture in the other shaders to determine whether a fragment is in
+                            shadow or fully lit. Multi-texturing is needed for the ground plane to combine shadow and
+                            texture mapping. [Angel 5.11, 7.5.6]
+                        </li>
+                    </ul>
+                    Make the shadows dark but not pitch black. This can be done by adjusting the visibility factor in
+                    the fragment shader.
+                </td>
+                <td>
+                    <canvas id="canvas2" width="512" height="512">Please use a browser supporting HTML5</canvas>
+                    <div>
+                        <div>Bounce <input id="bounce2" type="checkbox" checked /></div>
+                        <div>Look down <input id="lookDown2" type="checkbox" /></div>
+                        <div>Move light <input id="lightMove2" type="checkbox" checked /></div>
+                        <div>See from light's perspective <input id="seeLight" type="checkbox" /></div>
                     </div>
                 </td>
             </tr>
@@ -86,8 +125,6 @@
     <script type="text/javascript" src="../../common/initShaders.js"></script>
     <script type="text/javascript" src="../../common/MV.js"></script>
     <script type="text/javascript" src="../../common/OBJParser.js"></script>
-    <script type="text/javascript" src="../../common/simple_camera.js"></script>
-
 
     <!-- PART 1 - GROUND -->
     <script id="vertex-shader-ground-1" type="x-shader/x-vertex">
@@ -148,6 +185,111 @@
         }
     </script>
     <script type="text/javascript" src="./script1.js"></script>
+
+    <!-- PART 2 - GROUND -->
+    <script id="vertex-shader-ground-2" type="x-shader/x-vertex">
+        attribute vec3 position;
+        attribute vec2 texPosition;
+        
+        uniform mat4 modelView;
+        uniform mat4 perspective;
+        
+        varying vec2 fTexCoord;
+        varying vec3 fPosition;
+
+        void main() {
+            fPosition = position;
+            fTexCoord = texPosition;
+            gl_Position = perspective * modelView * vec4(position, 1);
+        }
+    </script>
+    <script id="fragment-shader-ground-2" type="x-shader/x-fragment">
+        precision mediump float;
+        
+        uniform mat4 lightModelView;
+        uniform mat4 lightPerspective;
+        
+        varying vec2 fTexCoord;
+        varying vec3 fPosition;
+        
+        uniform sampler2D texture;
+        uniform sampler2D shadow;
+
+        void main() {
+            vec4 fPositionFromLight = lightPerspective * lightModelView * vec4(fPosition, 1);
+            vec3 shadowCoord = (fPositionFromLight.xyz / fPositionFromLight.w) / 2.0 + 0.5;
+            vec4 rgbaDepth = texture2D(shadow, shadowCoord.xy);
+            float depth = rgbaDepth.r;
+            float visibility = (shadowCoord.z > depth + 0.005) ? 0.5 : 1.0;
+
+            vec4 origColor = texture2D(texture, fTexCoord);
+            gl_FragColor = vec4(origColor.rgb * visibility, origColor.a);
+            //gl_FragColor = vec4(vec3(depth), 1);
+        }
+    </script>
+
+    <!-- PART 2 - TEAPOT -->
+    <script id="vertex-shader-teapot-2" type="x-shader/x-vertex">
+        attribute vec3 position;
+        attribute vec3 normal;
+        attribute vec4 color;
+        
+        uniform mat4 modelView;
+        uniform mat4 perspectiveMatrix;
+
+        varying vec3 fPosition;
+        varying vec4 fColor;
+
+        void main() {
+            fPosition = position;
+            fColor = color;
+            
+            gl_Position = perspectiveMatrix * modelView * vec4(position, 1);
+        }
+    </script>
+    <script id="fragment-shader-teapot-2" type="x-shader/x-fragment">
+        precision highp float;
+        
+        varying vec3 fPosition;
+        varying vec4 fColor;
+
+        uniform mat4 lightModelView;
+        uniform mat4 lightPerspective;
+
+        uniform sampler2D shadow;
+
+        void main() {
+            vec4 origColor = vec4(1, 0, 0, 1);
+
+            vec4 fPositionFromLight = lightPerspective * lightModelView * vec4(fPosition, 1);
+            vec3 shadowCoord = (fPositionFromLight.xyz / fPositionFromLight.w) / 2.0 + 0.5;
+            vec4 rgbaDepth = texture2D(shadow, shadowCoord.xy);
+            float depth = rgbaDepth.r;
+            float visibility = (shadowCoord.z > depth + 0.005) ? 0.5 : 1.0;
+
+            gl_FragColor = vec4(origColor.rgb * visibility, origColor.a);
+        }
+    </script>
+
+    <!-- PART 2 - SHADOW -->
+    <script id="vertex-shader-shadow-2" type="x-shader/x-vertex">
+        attribute vec3 position;
+        uniform mat4 modelView;
+        uniform mat4 perspective;
+
+        void main() {
+            gl_Position = perspective * modelView * vec4(position, 1);
+        }
+    </script>
+    <script id="fragment-shader-shadow-2" type="x-shader/x-fragment">
+        precision highp float;
+
+        void main() {
+            gl_FragColor = vec4(gl_FragCoord.z, 0.0, 0.0, 1.0);
+        }
+    </script>
+
+    <script type="text/javascript" src="./script2.js"></script>
 </body>
 
 </html>

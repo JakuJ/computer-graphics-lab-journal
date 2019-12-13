@@ -18,30 +18,6 @@ function createEmptyArrayBuffer(gl, program, var_name, num, type) {
     return buffer;
 }
 
-function createChessboard() {
-    const texSize = 64;
-    const numRows = 8;
-    const numCols = 8;
-    const numComponents = 4;
-    let myImage = new Uint8Array(numComponents * texSize * texSize);
-
-    for (let i = 0; i < texSize; ++i) {
-        for (let j = 0; j < texSize; ++j) {
-            let patchx = Math.floor(i / (texSize / numRows));
-            let patchy = Math.floor(j / (texSize / numCols));
-            let c = (patchx % 2 !== patchy % 2 ? 255 : 0);
-
-            let index = numComponents * (i * texSize + j);
-            myImage[index + 0] = c;
-            myImage[index + 1] = c;
-            myImage[index + 2] = c;
-            myImage[index + 3] = 255;
-        }
-    }
-
-    return myImage;
-}
-
 function context() {
     // Prepare WebGL
     let canvas = document.getElementById("canvas4");
