@@ -84,15 +84,6 @@ function context() {
             gl.uniform1i(uLocation, flags[key]);
         }
 
-        var selects = {
-            'boundMode': document.getElementById("boundMode").value
-        }
-
-        for (key in selects) {
-            let uLocation = gl.getUniformLocation(program, key);
-            gl.uniform1i(uLocation, selects[key]);
-        }
-
         gl.drawArrays(gl.TRIANGLE_FAN, 0, vertices.length);
 
         window.requestAnimationFrame(render);

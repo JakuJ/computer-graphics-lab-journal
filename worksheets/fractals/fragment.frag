@@ -1,9 +1,9 @@
 #define MAX_STEPS 100
 #define SURF_DIST 0.001
-#define SPONGE_SIZE 2.0
+#define SPONGE_SIZE 1.0
+#define PLANE_Y (-3.0)
 #define WORLD_SIZE 6.0
-#define MAX_DIST 100.0
-#define REFLECTIONS 0
+#define MAX_DIST 40.0
 #define BACKGROUND vec3(0)
 
 precision highp float;
@@ -22,11 +22,8 @@ uniform bool useShadows;
 uniform bool useAttenuation;
 uniform float attenuationCoefficient;
 
-uniform int boundMode;
-
 // HELPER FUNCTIONS
 
-// float modulo
 vec3 vecMod(vec3 point) {
   const vec3 repetitions = vec3(1, 0, 0);
   vec3 base = floor(point / WORLD_SIZE + 0.5);
@@ -61,31 +58,22 @@ float de_box3D(vec3 point, vec3 bounds) {
   return length(max(q, 0.0)) + min(max(q.x, max(q.y, q.z)), 0.0);
 }
 
-// RAY TRACING INTERSECTIONS
-// used to speed up ray marching by the use of bounding boxes
-
-vec2 boxIntersection(vec3 ro, vec3 rd, vec3 boxSize, out vec3 outNormal) {
-  vec3 m = 1.0 / rd; // can precompute if traversing a set of aligned boxes
-  vec3 n = m * ro;   // can precompute if traversing a set of aligned boxes
-  vec3 k = abs(m) * boxSize;
-  vec3 t1 = -n - k;
-  vec3 t2 = -n + k;
-  float tN = max(max(t1.x, t1.y), t1.z);
-  float tF = min(min(t2.x, t2.y), t2.z);
-
-  if (tN > tF || tF < 0.0) {
-    return vec2(-1.0); // no intersection
-  }
-
-  outNormal = -sign(rd) * step(t1.yzx, t1.xyz) * step(t1.zxy, t1.xyz);
-  return vec2(tN, tF);
-}
+float de_plane(vec3 point, float y) { return point.y - y; }
 
 // SCENE DISTANCE FUNCTION
 
 vec4 distanceField(vec3 point) {
-  // Modulo repeated world
+  // Modulo repetition of the world
   point = vecMod(point);
+
+  // Ground plane distance
+  float planedist = de_plane(point, PLANE_Y);
+
+  // Optimization - we can use early exit below some y value
+  // because the scene is axis-oriented
+  if (planedist < 1.0) {
+    return vec4(planedist, vec3(1));
+  }
 
   // Menger sponge
   float d = de_box3D(point, vec3(SPONGE_SIZE));
@@ -110,49 +98,13 @@ vec4 distanceField(vec3 point) {
       material = vec3(0.2 * da * db * dc, 0, 1.0 - m / iters);
     }
   }
+
+  // Ground plane, union with the fractal
+  if (planedist < d) {
+    return vec4(planedist, vec3(1));
+  }
+
   return vec4(d, material);
-}
-
-float sceneBoundsRT(vec3 rayOrigin, vec3 rayDirection) {
-  vec3 normal;
-  vec2 res =
-      boxIntersection(rayOrigin, rayDirection,
-                      vec3(SPONGE_SIZE + SURF_DIST + glowRadius), normal);
-
-  if (sign(res.x * res.y) < 0.5) {
-    return 0.0;
-  } else if (res.x > 0.0) {
-    return res.x;
-  }
-
-  return -1.0;
-}
-
-float boundsField(vec3 point) {
-  point = vecMod(point);
-
-  vec3 boxSize = vec3(SPONGE_SIZE + glowRadius);
-  return de_box3D(point, boxSize);
-}
-
-float sceneBoundsRM(vec3 rayOrigin, vec3 rayDirection) {
-  float total = 0.0;
-  vec3 point;
-
-  for (int i = 1; i <= MAX_STEPS; i++) {
-    point = rayOrigin + rayDirection * total;
-    float dist = boundsField(point);
-
-    if (total > MAX_DIST) {
-      return -1.0;
-    } else if (dist < SURF_DIST) {
-      return total;
-    }
-
-    total += dist;
-  }
-
-  return -1.0;
 }
 
 // RENDERING FUNCTIONS
@@ -175,32 +127,27 @@ vec4 rayMarch(vec3 rayOrigin, vec3 rayDirection, out float glowDensity) {
 
   glowDensity = 0.0;
 
-  // hopefully a speed-up: try to raytrace once with simple bounding boxes
-  if (boundMode == 1) {
-    total = sceneBoundsRT(rayOrigin, rayDirection);
-  } else if (boundMode == 2) {
-    total = sceneBoundsRM(rayOrigin, rayDirection);
-  }
-
-  if (total < 0.0) {
-    return vec4(rayOrigin, total);
-  }
-
   for (int i = 1; i <= MAX_STEPS; i++) {
     point = rayOrigin + rayDirection * total;
-    dist = distanceField(point).x;
+    vec4 field = distanceField(point);
+    dist = field.x;
 
-    // volumetric (?) glow density using distance attenuation
-    glowDensity += glowIntensity(dist, total);
+    // volumetric glow density using distance attenuation
+    // disabled for the ground plane
+    // fractal color doesn't have the green component
+    if (field.z < 0.99) {
+      glowDensity += glowIntensity(dist, total);
+    }
 
-    if (total > MAX_DIST || dist < SURF_DIST) {
+    if (dist < SURF_DIST || total > MAX_DIST) {
       break;
     }
 
     total += dist;
   }
 
-  if (dist < SURF_DIST) {
+  // glow correction when we collide with a surface that's not the ground plane
+  if (dist < SURF_DIST && point.y > PLANE_Y + SURF_DIST) {
     float surfaceGlow = 10.0;
     if (useAttenuation) {
       surfaceGlow *= exp(-attenuationCoefficient * total);
@@ -223,8 +170,8 @@ float softShadow(vec3 rayOrigin, vec3 rayDirection, float distanceToLight,
 
     if (dist < SURF_DIST) {
       return 0.0;
-    } else if (dist > MAX_DIST) {
-      return res;
+    } else if (total > MAX_DIST) {
+      break;
     }
 
     if (total > distanceToLight) {
@@ -241,33 +188,28 @@ vec3 getNormal(vec3 p) {
   float d = distanceField(p).x;
   const vec2 eps = vec2(SURF_DIST * 0.1, 0);
 
-  // numerical approximation to a derivative
+  // numerical approximation to the SDF gradient
   vec3 n = d - vec3(distanceField(p - eps.xyy).x, distanceField(p - eps.yxy).x,
                     distanceField(p - eps.yyx).x);
 
   return normalize(n);
 }
 
-vec3 getLightPosition(vec3 rayOrigin) { return rayOrigin + vec3(0, 1, 0); }
+vec3 getLightPosition(vec3 rayOrigin) { return vec3(5.0 * sin(5.0 * time), 10, 0); }
 
-vec3 getLight(vec3 rayOrigin, vec3 rayDirection, out vec3 point) {
+vec3 getLight(vec3 rayOrigin, vec3 rayDirection) {
   // material properties
-  const vec3 Ma = vec3(1, 1, 1);        // ambient
+  const vec3 Ma = vec3(1);        // ambient
+  const vec3 Md = vec3(1); // diffuse
+  const vec3 Ms = vec3(1);        // specular
   const vec3 Mg = vec3(1, 0.6, 0.8);    // glow
-  const vec3 Md = vec3(0.76, 0.7, 0.5); // diffuse
-  const vec3 Ms = vec3(1, 1, 1);        // specular
 
   // ray march
   float glowDensity;
   float totalDist;
   vec4 rm = rayMarch(rayOrigin, rayDirection, glowDensity);
-  point = rm.xyz;
+  vec3 point = rm.xyz;
   totalDist = rm.w;
-
-  // ray marching stopped by boundary check
-  if (rm.w < 0.0) {
-    return BACKGROUND;
-  }
 
   // point light in the eye
   vec3 lightPos = getLightPosition(rayOrigin);
@@ -275,10 +217,8 @@ vec3 getLight(vec3 rayOrigin, vec3 rayDirection, out vec3 point) {
   vec3 n = getNormal(point);
   vec3 v = normalize(rayOrigin - point);
 
-  vec3 color = vec3(0);
-
   // glow term
-  color += Mg * Kg * glowDensity;
+  vec3 color = Mg * Kg * glowDensity;
 
   // no other terms in the void
   vec4 field = distanceField(point);
@@ -324,38 +264,13 @@ vec3 getLight(vec3 rayOrigin, vec3 rayDirection, out vec3 point) {
 
 void main() {
   // model space
-  mat4 modelView = rotate(vec3(0, 1, 0), time) *
-                   translate(vec3(0, 0, -(WORLD_SIZE + 2.0 * SPONGE_SIZE))); // orbiting the center
+  mat4 modelView = rotate(vec3(0, 1, 0), time / 2.0) * rotate(vec3(1, 0, 0), -0.5) *
+                   translate(vec3(0, 0, -(WORLD_SIZE + 3.0 * SPONGE_SIZE))); // orbiting the center
 
   vec3 rayOrigin = (modelView * vec4(0, 0, 0, 1)).xyz;
   vec3 rayDirection = normalize(modelView * vec4(fragPosition, 1, 0)).xyz;
 
-  vec3 point;
-  vec3 color = getLight(rayOrigin, rayDirection, point);
+  vec3 color = getLight(rayOrigin, rayDirection);
 
-// first reflection
-#if REFLECTIONS >= 1
-  if (distanceField(point).x < SURF_DIST) {
-    vec3 refl = normalize(reflect(rayDirection, getNormal(point)));
-    vec3 point2;
-    vec3 color2 = getLight(point + 2.0 * refl * SURF_DIST, refl, point2);
-    if (useAttenuation) {
-      color2 *= exp(-attenuationCoefficient * length(rayOrigin - point));
-    }
-    color += 0.5 * color2;
-#if REFLECTIONS == 2
-    // second reflection
-    if (distanceField(point2).x < SURF_DIST) {
-      vec3 refl2 = normalize(reflect(refl, getNormal(point2)));
-      vec3 point3;
-      vec3 color3 = getLight(point2 + 2.0 * refl2 * SURF_DIST, refl2, point3);
-      if (useAttenuation) {
-        color3 *= exp(-attenuationCoefficient * length(point - point2));
-      }
-      color += 0.25 * color3;
-    }
-#endif
-  }
-#endif
   gl_FragColor = vec4(color, 1);
 }
