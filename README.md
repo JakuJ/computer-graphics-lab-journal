@@ -1,6 +1,6 @@
 # Lab Journal
 
-#### Hosted using GitHub Pages [**here!**](https://jakuj.github.io/cg-lab-journal/)
+#### Hosted using GitHub Pages [**here!**](https://jakuj.github.io/computer-graphics-lab-journal/)
 
 This repository contains the source code for the lab journal for the *02561 Computer Graphics* course at the Technical University of Denmark.
 
