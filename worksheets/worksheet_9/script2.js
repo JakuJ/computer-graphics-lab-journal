@@ -121,7 +121,7 @@ function context() {
         indexBuffer: gl.createBuffer()
     }
 
-    readOBJFile('/worksheets/worksheet_9/teapot/teapot.obj', 1, false);
+    readOBJFile('./teapot/teapot.obj', 1, false);
 
     // TEAPOT SHADOWS
 
